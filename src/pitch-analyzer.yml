@@ -1,0 +1,34 @@
+educandu/pitch-analyzer:
+  name:
+    en: Pitch Analyzer
+    de: Ton-Analyse
+  label:
+    en: Label
+    de: Label
+  tools:
+    en: Tools
+    de: Werkzeuge
+  toolsButtonTooltip:
+    en: Tools for ABC notation
+    de: Werkzeuge für ABC-Notation
+  importMusicXmlLabel:
+    en: Import MusicXML
+    de: MusicXML importieren
+  transposeLabel:
+    en: Transpose
+    de: Transponieren
+  transposeChildLabel:
+    en: "{halfSteps} half steps {direction}"
+    de: "{halfSteps} Halbtöne {direction}"
+  up:
+    en: up
+    de: hoch
+  down:
+    en: down
+    de: runter
+  preview:
+    en: Preview
+    de: Vorschau
+  abcPlaceholder:
+    en: Enter ABC notation here...
+    de: ABC-Notation hier eingeben...

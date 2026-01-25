@@ -1,0 +1,67 @@
+.EP_Educandu_PitchAnalyzer_Display {
+  &-content {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  &-inputSection {
+    flex: 1;
+  }
+
+  &-inputContainer {
+    position: relative;
+  }
+
+  &-textarea {
+    width: 100%;
+    font-family: monospace;
+  }
+
+  &-toolsContainer {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+  }
+
+  &-toolsButton {
+    padding: 4px 8px;
+    background: #f0f0f0;
+    border: 1px solid #d9d9d9;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+
+    &:hover {
+      background: #e6e6e6;
+    }
+  }
+
+  &-previewSection {
+    flex: 1;
+  }
+
+  &-previewContainer {
+    position: relative;
+    border: 1px solid #d9d9d9;
+    border-radius: 4px;
+    padding: 16px;
+    min-height: 100px;
+    background: #fafafa;
+  }
+
+  &-preview {
+    overflow-x: auto;
+  }
+
+  &-previewLabel {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    font-size: 11px;
+    color: #999;
+    text-transform: uppercase;
+  }
+}
+
+.EP_Educandu_PitchAnalyzer_Editor {}
