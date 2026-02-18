@@ -1,9 +1,10 @@
-import { Input, Dropdown, Tooltip } from 'antd';
+import { Input, Dropdown, Tooltip, Collapse } from 'antd';
 import { useTranslation } from 'react-i18next';
 import React, { useState, useRef } from 'react';
+import Piano from './piano.js';
 import AbcNotation from '@educandu/educandu/components/abc-notation.js';
-import { handleError, handleWarning } from '@educandu/educandu/ui/error-helper.js';
-import { convertMusicXmlToAbc, transposeAbc } from '@educandu/abc-tools';
+import { handleWarning } from '@educandu/educandu/ui/error-helper.js';
+import { convertMusicXmlToAbc } from '@educandu/abc-tools';
 import { sectionDisplayProps } from '@educandu/educandu/ui/default-prop-types.js';
 import Logger from '@educandu/educandu/common/logger.js';
 
@@ -11,25 +12,25 @@ const { TextArea } = Input;
 
 const logger = new Logger(import.meta.url);
 
-const TRANSPOSITION_HALF_STEPS = [6, 5, 4, 3, 2, 1, -1, -2, -3, -4, -5, -6];
-
 export default function PitchAnalyzerDisplay({ content }) {
   const fileInputRef = useRef(null);
   const { t } = useTranslation('educandu/pitch-analyzer');
 
-  const [abcCode, setAbcCode] = useState('');
+  const [abcNotes, setAbcNotes] = useState([]);
+
+  const getAbcString = () => {
+    return abcNotes.join('');
+  };
+
+  const getFullAbcCode = () => {
+    if (abcNotes.length === 0) {
+      return '';
+    }
+    return `X:1\nL:1/1\nK:C\n${getAbcString()}`;
+  };
 
   const importMusicXml = () => {
     fileInputRef.current?.click();
-  };
-
-  const transpose = halfSteps => {
-    try {
-      const newValue = transposeAbc(abcCode, halfSteps);
-      setAbcCode(newValue);
-    } catch (error) {
-      handleError({ message: error.message, error, logger, t });
-    }
   };
 
   const handleFileSelect = async event => {
@@ -47,12 +48,13 @@ export default function PitchAnalyzerDisplay({ content }) {
       });
 
       const { result, warningMessage } = convertMusicXmlToAbc(xmlString);
-      setAbcCode(result);
+      const notes = result.match(/[_^=]?[A-Ga-g][,']*|[zZ]|[\[\]|]/g) || [];
+      setAbcNotes(notes);
       if (warningMessage) {
         handleWarning({ message: warningMessage, logger, t });
       }
     } catch (error) {
-      handleError({ message: error.message, error, logger, t });
+      handleWarning({ message: error.message, logger, t });
     }
 
     event.target.value = '';
@@ -61,31 +63,35 @@ export default function PitchAnalyzerDisplay({ content }) {
   const handleToolsItemClick = ({ key }) => {
     if (key === 'import-music-xml') {
       importMusicXml();
-    } else {
-      transpose(Number.parseInt(key.split('|')[1], 10));
     }
   };
 
   const handleAbcCodeChange = event => {
-    setAbcCode(event.target.value);
+    const value = event.target.value;
+    const notes = value.match(/[_^=]?[A-Ga-g][,']*|[zZ]|[\[\]|]/g) || [];
+    setAbcNotes(notes);
+  };
+
+  const handlePianoKeyPress = note => {
+    setAbcNotes([...abcNotes, note]);
+  };
+
+  const handleDeleteFirst = () => {
+    if (abcNotes.length > 0) {
+      setAbcNotes(abcNotes.slice(1));
+    }
+  };
+
+  const handleDeleteLast = () => {
+    if (abcNotes.length > 0) {
+      setAbcNotes(abcNotes.slice(0, -1));
+    }
   };
 
   const toolsItems = [
     {
       key: 'import-music-xml',
       label: t('importMusicXmlLabel')
-    },
-    {
-      key: 'transpose',
-      label: t('transposeLabel'),
-      disabled: !abcCode,
-      children: TRANSPOSITION_HALF_STEPS.map(halfSteps => ({
-        key: `transpose-child|${halfSteps}`,
-        label: t('transposeChildLabel', {
-          halfSteps: Math.abs(halfSteps),
-          direction: halfSteps < 0 ? t('down') : t('up')
-        })
-      }))
     }
   ];
 
@@ -96,7 +102,7 @@ export default function PitchAnalyzerDisplay({ content }) {
           <div className="EP_Educandu_PitchAnalyzer_Display-previewSection">
             <div className="EP_Educandu_PitchAnalyzer_Display-previewContainer">
               <div className="EP_Educandu_PitchAnalyzer_Display-preview">
-                <AbcNotation abcCode={abcCode} />
+                <AbcNotation abcCode={getFullAbcCode()} />
               </div>
               <div className="EP_Educandu_PitchAnalyzer_Display-previewLabel">
                 {t('preview')}
@@ -104,28 +110,58 @@ export default function PitchAnalyzerDisplay({ content }) {
             </div>
           </div>
           <div className="EP_Educandu_PitchAnalyzer_Display-inputSection">
-            <div className="EP_Educandu_PitchAnalyzer_Display-inputContainer">
-              <TextArea
-                value={abcCode}
-                rows={6}
-                className="EP_Educandu_PitchAnalyzer_Display-textarea"
-                onChange={handleAbcCodeChange}
-                placeholder={t('abcPlaceholder')}
-                />
-              <div className="EP_Educandu_PitchAnalyzer_Display-toolsContainer">
-                <Dropdown
-                  placement="topLeft"
-                  trigger={['click']}
-                  arrow={{ pointAtCenter: true }}
-                  menu={{ items: toolsItems, onClick: handleToolsItemClick }}
-                  >
-                  <Tooltip title={t('toolsButtonTooltip')} placement="left">
-                    <div className="EP_Educandu_PitchAnalyzer_Display-toolsButton">
-                      {t('tools')}
+            <Collapse
+              size="small"
+              items={[
+                {
+                  key: 'abc-input',
+                  label: t('abcInputLabel'),
+                  children: (
+                    <div className="EP_Educandu_PitchAnalyzer_Display-inputContainer">
+                      <TextArea
+                        value={getAbcString()}
+                        rows={6}
+                        className="EP_Educandu_PitchAnalyzer_Display-textarea"
+                        onChange={handleAbcCodeChange}
+                        placeholder={t('abcPlaceholder')}
+                        />
+                      <div className="EP_Educandu_PitchAnalyzer_Display-toolsContainer">
+                        <Dropdown
+                          placement="topLeft"
+                          trigger={['click']}
+                          arrow={{ pointAtCenter: true }}
+                          menu={{ items: toolsItems, onClick: handleToolsItemClick }}
+                          >
+                          <Tooltip title={t('toolsButtonTooltip')} placement="left">
+                            <div className="EP_Educandu_PitchAnalyzer_Display-toolsButton">
+                              {t('tools')}
+                            </div>
+                          </Tooltip>
+                        </Dropdown>
+                      </div>
                     </div>
-                  </Tooltip>
-                </Dropdown>
-              </div>
+                  )
+                }
+              ]}
+              />
+            <div className="EP_Educandu_PitchAnalyzer_Display-pianoContainer">
+              <button
+                type="button"
+                className="EP_Educandu_PitchAnalyzer_Display-deleteButton"
+                onClick={handleDeleteFirst}
+                disabled={abcNotes.length === 0}
+                >
+                ←
+              </button>
+              <Piano onKeyPress={handlePianoKeyPress} />
+              <button
+                type="button"
+                className="EP_Educandu_PitchAnalyzer_Display-deleteButton"
+                onClick={handleDeleteLast}
+                disabled={abcNotes.length === 0}
+                >
+                →
+              </button>
             </div>
           </div>
         </div>

@@ -6,11 +6,11 @@ educandu/pitch-analyzer:
     en: Label
     de: Label
   tools:
-    en: Tools
-    de: Werkzeuge
+    en: Tool
+    de: Werkzeug
   toolsButtonTooltip:
-    en: Tools for ABC notation
-    de: Werkzeuge für ABC-Notation
+    en: "Import (*.musicxml)" 
+    de: "Import (*.musicxml)" 
   importMusicXmlLabel:
     en: Import MusicXML
     de: MusicXML importieren
@@ -32,3 +32,6 @@ educandu/pitch-analyzer:
   abcPlaceholder:
     en: Enter ABC notation here...
     de: ABC-Notation hier eingeben...
+  abcInputLabel:
+    en: ABC Code
+    de: ABC-Code

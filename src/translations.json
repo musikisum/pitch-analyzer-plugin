@@ -9,12 +9,12 @@
       "de": "Label"
     },
     "tools": {
-      "en": "Tools",
-      "de": "Werkzeuge"
+      "en": "Tool",
+      "de": "Werkzeug"
     },
     "toolsButtonTooltip": {
-      "en": "Tools for ABC notation",
-      "de": "Werkzeuge für ABC-Notation"
+      "en": "Import (*.musicxml)",
+      "de": "Import (*.musicxml)"
     },
     "importMusicXmlLabel": {
       "en": "Import MusicXML",
@@ -43,6 +43,10 @@
     "abcPlaceholder": {
       "en": "Enter ABC notation here...",
       "de": "ABC-Notation hier eingeben..."
+    },
+    "abcInputLabel": {
+      "en": "ABC Code",
+      "de": "ABC-Code"
     }
   }
 }

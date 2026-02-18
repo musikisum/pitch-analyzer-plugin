@@ -1,7 +1,14 @@
 {
   "permissions": {
     "allow": [
-      "Bash(gulp)"
+      "Bash(gulp)",
+      "Bash(npm run build:*)",
+      "Bash(npx gulp)",
+      "Bash(npx eslint:*)",
+      "Bash(npx gulp watch)",
+      "Bash(npx gulp buildJs)",
+      "Bash(npx gulp buildTestAppJs)",
+      "Bash(npx gulp restartServer)"
     ]
   }
 }
