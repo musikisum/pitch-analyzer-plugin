@@ -2,13 +2,13 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 const WHITE_KEYS = [
-  { note: 'C', label: 'C', abcCode: '=C' },
-  { note: 'D', label: 'D', abcCode: '=D' },
-  { note: 'E', label: 'E', abcCode: '=E' },
-  { note: 'F', label: 'F', abcCode: '=F' },
-  { note: 'G', label: 'G', abcCode: '=G' },
-  { note: 'A', label: 'A', abcCode: '=A' },
-  { note: 'B', label: 'B', abcCode: '=B' }
+  { note: 'C', label: 'C', abcCode: 'C' },
+  { note: 'D', label: 'D', abcCode: 'D' },
+  { note: 'E', label: 'E', abcCode: 'E' },
+  { note: 'F', label: 'F', abcCode: 'F' },
+  { note: 'G', label: 'G', abcCode: 'G' },
+  { note: 'A', label: 'A', abcCode: 'A' },
+  { note: 'B', label: 'B', abcCode: 'B' }
 ];
 
 const BLACK_KEYS = [
