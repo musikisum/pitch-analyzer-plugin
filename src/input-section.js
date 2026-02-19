@@ -1,10 +1,10 @@
 import Piano from './piano.js';
 import PropTypes from 'prop-types';
-import React, { useRef, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import Logger from '@educandu/educandu/common/logger.js';
 import { Input, Dropdown, Tooltip, Collapse } from 'antd';
 import { convertMusicXmlToAbc } from '@educandu/abc-tools';
+import React, { useRef, useState, useEffect } from 'react';
 import { handleWarning } from '@educandu/educandu/ui/error-helper.js';
 
 const { TextArea } = Input;
@@ -15,14 +15,13 @@ const NOTE_BASE_PC = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 };
 
 function pitchClassOf(note) {
   const match = note.match(/^([\^_=]*)([A-Ga-g])/);
-  if (!match) return null;
+  if (!match) {
+    return null;
+  }
   const prefix = match[1];
   const letter = match[2].toUpperCase();
   let pc = NOTE_BASE_PC[letter];
-  if (prefix === '^^') pc += 2;
-  else if (prefix === '^') pc += 1;
-  else if (prefix === '__') pc -= 2;
-  else if (prefix === '_') pc -= 1;
+  if (prefix === '^^') {pc += 2;} else if (prefix === '^') {pc += 1;} else if (prefix === '__') {pc -= 2;} else if (prefix === '_') {pc -= 1;}
   return ((pc % 12) + 12) % 12;
 }
 
@@ -36,7 +35,7 @@ function deduplicateNotes(notes) {
   });
   return notes.filter((note, i) => {
     const pc = pitchClassOf(note);
-    if (pc === null) return true;
+    if (pc === null) {return true;}
     return lastIndexByPc[pc] === i;
   });
 }
@@ -63,7 +62,7 @@ function applyAccidentalContext(notes) {
     }
     if (accidentalActive[pitchLetter]) {
       accidentalActive[pitchLetter] = false;
-      return '=' + note;
+      return `=${  note}`;
     }
     return note;
   });

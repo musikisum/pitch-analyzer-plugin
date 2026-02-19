@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import InputSection from './input-section.js';
+import { useTranslation } from 'react-i18next';
+import abcPcsetAdapter from './abc-pcset-adapter.js';
 import AbcPlayer from '@educandu/educandu/components/abc-player.js';
 import AbcNotation from '@educandu/educandu/components/abc-notation.js';
 import { sectionDisplayProps } from '@educandu/educandu/ui/default-prop-types.js';
@@ -17,6 +18,8 @@ export default function PitchAnalyzerDisplay({ content }) {
     }
     return `X:1\nL:1/1\nK:C\n${abcNotes.join('')}`;
   };
+
+  // console.log(abcPcsetAdapter(abcNotes));
 
   return (
     <div className="EP_Educandu_PitchAnalyzer_Display">
