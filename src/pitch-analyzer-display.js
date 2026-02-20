@@ -38,7 +38,7 @@ export default function PitchAnalyzerDisplay({ content }) {
           <div className="AbcNotation-player">
             <AbcPlayer renderResult={lastRenderResult} />
           </div>
-          <PcSetView data={abcPcsetAdapter(abcNotes)} defaultopen={false} />
+          <PcSetView data={abcPcsetAdapter(abcNotes)} abcNotes={abcNotes} onImport={setAbcNotes} defaultOpen={false} />
         </div>
       </div>
     </div>

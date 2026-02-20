@@ -76,27 +76,71 @@
     height: 120px;
     border: 1px solid #d9d9d9;
     border-radius: 4px;
-    background: #fff;
-    cursor: pointer;
-    font-size: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s;
+    overflow: hidden;
     transform: rotate(180deg);
+    display: flex;
+    flex-direction: column;
 
-    &:hover:not(:disabled) {
-      background: #ffebee;
-      border-color: #f44336;
+    // Shared styles for both halves
+    &-single,
+    &-all {
+      flex: 1;
+      width: 100%;
+      border: none;
+      background: #fff;
+      cursor: pointer;
+      font-size: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s, color 0.2s;
+
+      &:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+      }
     }
 
-    &:active:not(:disabled) {
-      background: #ffcdd2;
+    // Upper half (visually): delete one note — light red hover
+    &-single {
+      border-bottom: 1px solid #f0f0f0;
+
+      &:hover:not(:disabled) {
+        background: #ffebee;
+      }
+
+      &:active:not(:disabled) {
+        background: #ffcdd2;
+      }
     }
 
-    &:disabled {
-      opacity: 0.4;
-      cursor: not-allowed;
+    // Lower half (visually): delete all notes — strong red hover
+    &-all {
+      color: rgba(0, 0, 0, 0.45);
+
+      &:hover:not(:disabled) {
+        background: #f44336;
+        color: #fff;
+      }
+
+      &:active:not(:disabled) {
+        background: #b71c1c;
+        color: #fff;
+      }
+    }
+
+    &-allContent {
+      transform: rotate(180deg);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+    }
+
+    &-allNotes {
+      font-size: 14px;
+      line-height: 1;
+      letter-spacing: 1px;
     }
   }
 }

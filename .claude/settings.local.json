@@ -8,7 +8,9 @@
       "Bash(npx gulp watch)",
       "Bash(npx gulp buildJs)",
       "Bash(npx gulp buildTestAppJs)",
-      "Bash(npx gulp restartServer)"
+      "Bash(npx gulp restartServer)",
+      "Bash(node -e:*)",
+      "Bash(git mv:*)"
     ]
   }
 }

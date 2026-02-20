@@ -1,0 +1,85 @@
+educandu/pitch-analyzer:
+  name:
+    en: Pitch Analyzer
+    de: Tonhöhen-Analyse
+  label:
+    en: Label
+    de: Label
+  tools:
+    en: Tool
+    de: Werkzeug
+  toolsButtonTooltip:
+    en: "Import (*.musicxml)" 
+    de: "Import (*.musicxml)" 
+  importMusicXmlLabel:
+    en: Import MusicXML
+    de: MusicXML importieren
+  preview:
+    en: Preview
+    de: Vorschau
+  abcPlaceholder:
+    en: Enter ABC notation here...
+    de: ABC-Notation hier eingeben...
+  abcInputLabel:
+    en: ABC Code
+    de: ABC-Code
+  noResults:
+    en: No results
+    de: Keine Treffer
+  importLabel:
+    en: Import
+    de: Import
+  jsonLabel:
+    en: JSON
+    de: JSON
+  cardinalityLabel:
+    en: "Cardinality: {count}"
+    de: "Kardinalität: {count}"
+  intervalVectorLabel:
+    en: Interval Vector
+    de: Intervallvektor
+  zMateLabel:
+    en: Z-Mate
+    de: Z-Verwandter
+  forteNameLabel:
+    en: Forte Name
+    de: Forte-Name
+  fortePrimeFormLabel:
+    en: Forte Prime Form
+    de: Forte Prime Form
+  rahnPrimeFormLabel:
+    en: Rahn Prime Form
+    de: Rahn Prime Form
+  superSetsLabel:
+    en: Super Sets
+    de: Super Sets
+  subSetsLabel:
+    en: Sub Sets
+    de: Sub Sets
+  filterPlaceholder:
+    en: "Filter (e.g. 0123, 79A, ∅ …)"
+    de: "Filter (z.B. 0123, 79A, ∅ …)"
+  chipsLabel:
+    en: Chips
+    de: Chips
+  listLabel:
+    en: List
+    de: Liste
+  setTitle:
+    en: Set
+    de: Set
+  deleteAllLabel:
+    en: Delete all notes
+    de: Alle Noten löschen
+  deleteFirstLabel:
+    en: Delete first note
+    de: Erste Note löschen
+  deleteLastLabel:
+    en: Delete last note
+    de: Letzte Note löschen
+  importErrorMessage:
+    en: File could not be read
+    de: Datei konnte nicht gelesen werden
+  saveSuccessMessage:
+    en: File saved
+    de: Datei gespeichert

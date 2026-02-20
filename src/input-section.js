@@ -2,6 +2,7 @@ import Piano from './piano.js';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import Logger from '@educandu/educandu/common/logger.js';
+import { DeleteOutlined } from '@ant-design/icons';
 import { Input, Dropdown, Tooltip, Collapse } from 'antd';
 import { convertMusicXmlToAbc } from '@educandu/abc-tools';
 import React, { useRef, useState, useEffect } from 'react';
@@ -82,9 +83,9 @@ function processNotes(notes) {
   return applyAccidentalContext(deduplicateNotes(applyAccidentalContext(notes)));
 }
 
-export default function InputSection({ abcNotes, onNotesChange }) {
+const ABCREGEX = /(?:\^{1,2}|_{1,2}|=)?[A-Ga-g][,']*|[zZ]|[[\]|]/g;
 
-  const ABCREGEX = /(?:\^{1,2}|_{1,2}|=)?[A-Ga-g][,']*|[zZ]|[\[\]|]/g;
+export default function InputSection({ abcNotes, onNotesChange }) {
   
   const fileInputRef = useRef(null);
   const lastNotesFromTypingRef = useRef(null);
@@ -135,6 +136,10 @@ export default function InputSection({ abcNotes, onNotesChange }) {
     if (key === 'import-music-xml') {
       importMusicXml();
     }
+  };
+
+  const handleDeleteAll = () => {
+    onNotesChange([]);
   };
 
   const handleAbcCodeChange = event => {
@@ -207,23 +212,53 @@ export default function InputSection({ abcNotes, onNotesChange }) {
         ]}
         />
       <div className="EP_Educandu_PitchAnalyzer_Display-pianoContainer">
-        <button
-          type="button"
-          className="EP_Educandu_PitchAnalyzer_Display-deleteButton"
-          onClick={handleDeleteFirst}
-          disabled={abcNotes.length === 0}
-          >
-          ←
-        </button>
+        <div className="EP_Educandu_PitchAnalyzer_Display-deleteButton">
+          <button
+            type="button"
+            aria-label={t('deleteAllLabel')}
+            className="EP_Educandu_PitchAnalyzer_Display-deleteButton-all"
+            onClick={handleDeleteAll}
+            disabled={abcNotes.length === 0}
+            >
+            <span className="EP_Educandu_PitchAnalyzer_Display-deleteButton-allContent">
+              <span className="EP_Educandu_PitchAnalyzer_Display-deleteButton-allNotes">♩♪</span>
+              <DeleteOutlined />
+            </span>
+          </button>
+          <button
+            type="button"
+            aria-label={t('deleteFirstLabel')}
+            className="EP_Educandu_PitchAnalyzer_Display-deleteButton-single"
+            onClick={handleDeleteFirst}
+            disabled={abcNotes.length === 0}
+            >
+            ←
+          </button>
+        </div>
         <Piano onKeyPress={handlePianoKeyPress} />
-        <button
-          type="button"
-          className="EP_Educandu_PitchAnalyzer_Display-deleteButton"
-          onClick={handleDeleteLast}
-          disabled={abcNotes.length === 0}
-          >
-          →
-        </button>
+        <div className="EP_Educandu_PitchAnalyzer_Display-deleteButton">
+          <button
+            type="button"
+            aria-label={t('deleteAllLabel')}
+            className="EP_Educandu_PitchAnalyzer_Display-deleteButton-all"
+            onClick={handleDeleteAll}
+            disabled={abcNotes.length === 0}
+            >
+            <span className="EP_Educandu_PitchAnalyzer_Display-deleteButton-allContent">
+              <span className="EP_Educandu_PitchAnalyzer_Display-deleteButton-allNotes">♩♪</span>
+              <DeleteOutlined />
+            </span>
+          </button>
+          <button
+            type="button"
+            aria-label={t('deleteLastLabel')}
+            className="EP_Educandu_PitchAnalyzer_Display-deleteButton-single"
+            onClick={handleDeleteLast}
+            disabled={abcNotes.length === 0}
+            >
+            →
+          </button>
+        </div>
       </div>
       <input
         ref={fileInputRef}
