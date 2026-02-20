@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PcSetView from './pc-set-view.js';
 import InputSection from './input-section.js';
 import { useTranslation } from 'react-i18next';
 import abcPcsetAdapter from './abc-pcset-adapter.js';
@@ -19,8 +20,6 @@ export default function PitchAnalyzerDisplay({ content }) {
     return `X:1\nL:1/1\nK:C\n${abcNotes.join('')}`;
   };
 
-  console.log(abcPcsetAdapter(abcNotes));
-
   return (
     <div className="EP_Educandu_PitchAnalyzer_Display">
       <div className={`u-horizontally-centered u-width-${content.width}`}>
@@ -35,10 +34,11 @@ export default function PitchAnalyzerDisplay({ content }) {
               </div>
             </div>
           </div>
+          <InputSection abcNotes={abcNotes} onNotesChange={setAbcNotes} />
           <div className="AbcNotation-player">
             <AbcPlayer renderResult={lastRenderResult} />
           </div>
-          <InputSection abcNotes={abcNotes} onNotesChange={setAbcNotes} />
+          <PcSetView data={abcPcsetAdapter(abcNotes)} defaultopen={false} />
         </div>
       </div>
     </div>
