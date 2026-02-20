@@ -21,7 +21,15 @@ function pitchClassOf(note) {
   const prefix = match[1];
   const letter = match[2].toUpperCase();
   let pc = NOTE_BASE_PC[letter];
-  if (prefix === '^^') {pc += 2;} else if (prefix === '^') {pc += 1;} else if (prefix === '__') {pc -= 2;} else if (prefix === '_') {pc -= 1;}
+  if (prefix === '^^') {
+    pc += 2;
+  } else if (prefix === '^') {
+    pc += 1;
+  } else if (prefix === '__') {
+    pc -= 2;
+  } else if (prefix === '_') {
+    pc -= 1;
+  }
   return ((pc % 12) + 12) % 12;
 }
 
@@ -35,7 +43,9 @@ function deduplicateNotes(notes) {
   });
   return notes.filter((note, i) => {
     const pc = pitchClassOf(note);
-    if (pc === null) {return true;}
+    if (pc === null) {
+      return true;
+    }
     return lastIndexByPc[pc] === i;
   });
 }
@@ -62,7 +72,7 @@ function applyAccidentalContext(notes) {
     }
     if (accidentalActive[pitchLetter]) {
       accidentalActive[pitchLetter] = false;
-      return `=${  note}`;
+      return `=${note}`;
     }
     return note;
   });

@@ -19,7 +19,7 @@ export default function PitchAnalyzerDisplay({ content }) {
     return `X:1\nL:1/1\nK:C\n${abcNotes.join('')}`;
   };
 
-  // console.log(abcPcsetAdapter(abcNotes));
+  console.log(abcPcsetAdapter(abcNotes));
 
   return (
     <div className="EP_Educandu_PitchAnalyzer_Display">
