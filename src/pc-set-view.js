@@ -1,27 +1,12 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
-import {
-  Badge,
-  Button,
-  Card,
-  Collapse,
-  Descriptions,
-  Divider,
-  Input,
-  message,
-  Segmented,
-  Space,
-  Tag,
-  Typography,
-} from 'antd';
+import { useTranslation } from 'react-i18next';
+import pcsetToAbcNotes, { sortAbcNotesByPitch } from './adapter-pcset-abc.js';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { DownloadOutlined, DownOutlined, SearchOutlined, UploadOutlined } from '@ant-design/icons';
-import pcsetToAbcNotes, { sortAbcNotesByPitch } from './pcset-abc-adapter.js';
+import { Badge, Button, Card, Collapse, Descriptions, Divider, Input, message, Segmented, Space, Tag, Typography } from 'antd';
 
 const { Text } = Typography;
-
 const PC_SET_KEYS = ['rahnPrimeForm', 'fortePrimeForm', 'intervalVector', 'forteName', 'cardinality', 'zMate', 'superSets', 'subSets'];
-
 const EMPTY_NOTES = [];
 
 function renderExpandIcon({ isActive }) {

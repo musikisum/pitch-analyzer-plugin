@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import PcSetView from './pc-set-view.js';
 import InputSection from './input-section.js';
 import { useTranslation } from 'react-i18next';
-import abcPcsetAdapter from './abc-pcset-adapter.js';
+import abcPcsetAdapter from './adapter-abc-pcset.js';
 import AbcPlayer from '@educandu/educandu/components/abc-player.js';
 import AbcNotation from '@educandu/educandu/components/abc-notation.js';
 import { sectionDisplayProps } from '@educandu/educandu/ui/default-prop-types.js';
