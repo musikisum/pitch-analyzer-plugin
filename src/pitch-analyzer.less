@@ -40,8 +40,72 @@
     flex-direction: column;
   }
 
-  &-analysisLogItem--selected {
-    background-color: #e6f4ff;
+  &-analysisLogList {
+    border: 1px solid #d9d9d9;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  &-analysisLogItem {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 8px;
+    cursor: pointer;
+    border-bottom: 1px solid #f0f0f0;
+    background: #fff;
+    transition: background 0.15s, opacity 0.15s;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    &:hover {
+      background: #fafafa;
+    }
+
+    &--selected {
+      background-color: #e6f4ff;
+
+      &:hover {
+        background-color: #bae0ff;
+      }
+    }
+
+    &.is-dragged {
+      border: 1px solid #91caff;
+      border-radius: 4px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    &.is-other-dragged {
+      opacity: 0.6;
+    }
+  }
+
+  &-analysisLogItemHandle {
+    display: flex;
+    align-items: center;
+    padding: 0 4px;
+    color: #bbb;
+    cursor: grab;
+    flex-shrink: 0;
+
+    &:active {
+      cursor: grabbing;
+    }
+
+    &:hover {
+      color: #666;
+    }
+  }
+
+  &-analysisLogItemActions {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    padding-left: 8px;
+    border-left: 1px solid #f0f0f0;
   }
 
   &-inputSection {

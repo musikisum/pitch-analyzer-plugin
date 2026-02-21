@@ -116,3 +116,6 @@ educandu/pitch-analyzer:
   importAnalysisLabel:
     en: Import analysis.json
     de: analyse.json importieren
+  updateResultLabel:
+    en: Update result
+    de: Analyse aktualisieren

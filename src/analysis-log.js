@@ -1,8 +1,9 @@
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import React, { useRef, useState } from 'react';
-import { DeleteOutlined, DownloadOutlined, SaveOutlined, UploadOutlined } from '@ant-design/icons';
-import { Button, Input, List, message, Space, Typography } from 'antd';
+import { Button, Input, message, Space, Typography } from 'antd';
+import { DeleteOutlined, DownloadOutlined, HolderOutlined, RedoOutlined, SaveOutlined, UploadOutlined } from '@ant-design/icons';
+import DragAndDropContainer from '@educandu/educandu/components/drag-and-drop-container.js';
 
 const { Text } = Typography;
 
@@ -35,16 +36,24 @@ async function downloadJson(data, fileName, successMessage) {
   message.success(successMessage);
 }
 
+function moveItem(arr, fromIndex, toIndex) {
+  const next = [...arr];
+  const [item] = next.splice(fromIndex, 1);
+  next.splice(toIndex, 0, item);
+  return next;
+}
+
 export default function AnalysisLog({ pcSetData, abcNotes, onSelect }) {
   const { t } = useTranslation('educandu/pitch-analyzer');
   const importFileRef = useRef(null);
   const [measure, setMeasure] = useState('');
   const [comment, setComment] = useState('');
   const [results, setResults] = useState([]);
-  const [selectedIndex, setSelectedIndex] = useState(null);
+  const [selectedKey, setSelectedKey] = useState(null);
 
   const handleSave = () => {
     const entry = {
+      key: `entry-${Date.now()}`,
       measure,
       comment,
       abcNotes: [...abcNotes],
@@ -53,23 +62,38 @@ export default function AnalysisLog({ pcSetData, abcNotes, onSelect }) {
     setResults(prev => [...prev, entry]);
     setMeasure('');
     setComment('');
+    setSelectedKey(null);
   };
 
-  const handleDelete = index => {
+  const handleUpdate = () => {
+    setResults(prev => prev.map(item =>
+      item.key === selectedKey
+        ? { ...item, measure, comment, abcNotes: [...abcNotes], pcSet: { ...pcSetData } }
+        : item
+    ));
+  };
+
+  const handleDelete = key => {
     setResults(prev => {
-      const next = prev.filter((_, i) => i !== index);
-      if (selectedIndex === index) {
-        setSelectedIndex(null);
-      } else if (selectedIndex > index) {
-        setSelectedIndex(selectedIndex - 1);
+      const next = prev.filter(item => item.key !== key);
+      if (selectedKey === key) {
+        setSelectedKey(null);
+        setMeasure('');
+        setComment('');
       }
       return next;
     });
   };
 
-  const handleSelect = (item, index) => {
-    setSelectedIndex(index);
+  const handleSelect = item => {
+    setSelectedKey(item.key);
+    setMeasure(item.measure);
+    setComment(item.comment);
     onSelect(item.abcNotes);
+  };
+
+  const handleItemMove = (fromIndex, toIndex) => {
+    setResults(prev => moveItem(prev, fromIndex, toIndex));
   };
 
   const handleDownload = () => {
@@ -88,8 +112,12 @@ export default function AnalysisLog({ pcSetData, abcNotes, onSelect }) {
       const text = await file.text();
       const parsed = JSON.parse(text);
       if (Array.isArray(parsed)) {
-        setResults(parsed);
-        setSelectedIndex(null);
+        const withKeys = parsed.map((item, i) => ({
+          key: item.key || `entry-${Date.now()}-${i}`,
+          ...item
+        }));
+        setResults(withKeys);
+        setSelectedKey(null);
       }
     } catch {
       message.error(t('importErrorMessage'));
@@ -98,6 +126,45 @@ export default function AnalysisLog({ pcSetData, abcNotes, onSelect }) {
   };
 
   const isSaveDisabled = abcNotes.length === 0;
+  const isUpdateDisabled = abcNotes.length === 0 || selectedKey === null;
+
+  const dragAndDropItems = results.map(item => ({
+    key: item.key,
+    render: ({ dragHandleProps, isDragged, isOtherDragged }) => (
+      <div
+        className={[
+          'EP_Educandu_PitchAnalyzer_Display-analysisLogItem',
+          item.key === selectedKey ? 'EP_Educandu_PitchAnalyzer_Display-analysisLogItem--selected' : '',
+          isDragged ? 'is-dragged' : '',
+          isOtherDragged ? 'is-other-dragged' : ''
+        ].filter(Boolean).join(' ')}
+        onClick={() => handleSelect(item)}
+        >
+        <span
+          {...dragHandleProps}
+          className="EP_Educandu_PitchAnalyzer_Display-analysisLogItemHandle"
+          onClick={e => e.stopPropagation()}
+          >
+          <HolderOutlined />
+        </span>
+        <Space wrap style={{ flex: 1 }}>
+          {item.measure ? <Text strong>{item.measure}</Text> : null}
+          {item.pcSet?.forteName ? <Text code>{item.pcSet.forteName}</Text> : null}
+          {item.pcSet?.fortePrimeForm ? <Text type="secondary">[{item.pcSet.fortePrimeForm}]</Text> : null}
+          {item.comment ? <Text type="secondary">— {item.comment}</Text> : null}
+        </Space>
+        <span className="EP_Educandu_PitchAnalyzer_Display-analysisLogItemActions">
+          <Button
+            type="text"
+            size="small"
+            danger
+            icon={<DeleteOutlined />}
+            onClick={e => { e.stopPropagation(); handleDelete(item.key); }}
+            />
+        </span>
+      </div>
+    )
+  }));
 
   return (
     <div className="EP_Educandu_PitchAnalyzer_Display-analysisLog">
@@ -121,39 +188,24 @@ export default function AnalysisLog({ pcSetData, abcNotes, onSelect }) {
           >
           {t('saveResultLabel')}
         </Button>
+        <Button
+          icon={<RedoOutlined />}
+          disabled={isUpdateDisabled}
+          onClick={handleUpdate}
+          >
+          {t('updateResultLabel')}
+        </Button>
       </Space>
 
       {results.length > 0 && (
         <div className="EP_Educandu_PitchAnalyzer_Display-analysisLogResults">
-          <List
-            size="small"
-            bordered
-            dataSource={results}
-            renderItem={(item, index) => (
-              <List.Item
-                className={index === selectedIndex ? 'EP_Educandu_PitchAnalyzer_Display-analysisLogItem--selected' : ''}
-                style={{ cursor: 'pointer' }}
-                onClick={() => handleSelect(item, index)}
-                actions={[
-                  <Button
-                    key="delete"
-                    type="text"
-                    size="small"
-                    danger
-                    icon={<DeleteOutlined />}
-                    onClick={e => { e.stopPropagation(); handleDelete(index); }}
-                    />
-                ]}
-                >
-                <Space wrap>
-                  {item.measure && <Text strong>{item.measure}</Text>}
-                  {item.pcSet?.forteName && <Text code>{item.pcSet.forteName}</Text>}
-                  {item.pcSet?.fortePrimeForm && <Text type="secondary">[{item.pcSet.fortePrimeForm}]</Text>}
-                  {item.comment && <Text type="secondary">— {item.comment}</Text>}
-                </Space>
-              </List.Item>
-            )}
-            />
+          <div className="EP_Educandu_PitchAnalyzer_Display-analysisLogList">
+            <DragAndDropContainer
+              droppableId="analysis-log"
+              items={dragAndDropItems}
+              onItemMove={handleItemMove}
+              />
+          </div>
           <Space style={{ marginTop: 8 }}>
             <Button icon={<DownloadOutlined />} onClick={handleDownload}>
               {t('downloadAnalysisLabel')}
