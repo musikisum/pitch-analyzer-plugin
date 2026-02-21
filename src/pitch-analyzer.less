@@ -5,6 +5,45 @@
     gap: 16px;
   }
 
+  &-taskSection {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  &-taskNotation {
+    overflow-x: auto;
+  }
+
+  &-taskImage {
+    img {
+      max-width: 100%;
+      height: auto;
+    }
+  }
+
+  &-taskDescription {
+    padding: 12px 16px;
+    background: #f6f8fa;
+    border-left: 3px solid #d9d9d9;
+    border-radius: 0 4px 4px 0;
+  }
+
+  &-analysisLog {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  &-analysisLogResults {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &-analysisLogItem--selected {
+    background-color: #e6f4ff;
+  }
+
   &-inputSection {
     flex: 1;
   }
@@ -46,9 +85,8 @@
     border: 1px solid #d9d9d9;
     border-radius: 4px;
     padding: 16px;
-    min-height: 160px;
+    min-height: 100px;
     background: #fafafa;
-    overflow: hidden;
   }
 
   &-preview {
@@ -70,6 +108,7 @@
     align-items: center;
     gap: 16px;
     margin-top: 16px;
+    overflow-x: auto;
   }
 
   &-deleteButton {

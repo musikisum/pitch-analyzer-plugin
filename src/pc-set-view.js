@@ -1,12 +1,10 @@
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
-import pcsetToAbcNotes, { sortAbcNotesByPitch } from './adapter-pcset-abc.js';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { DownloadOutlined, DownOutlined, SearchOutlined, UploadOutlined } from '@ant-design/icons';
-import { Badge, Button, Card, Collapse, Descriptions, Divider, Input, message, Segmented, Space, Tag, Typography } from 'antd';
+import React, { useCallback, useMemo, useState } from 'react';
+import { DownOutlined, SearchOutlined } from '@ant-design/icons';
+import { Badge, Card, Collapse, Descriptions, Divider, Input, Segmented, Space, Tag, Typography } from 'antd';
 
 const { Text } = Typography;
-const PC_SET_KEYS = ['rahnPrimeForm', 'fortePrimeForm', 'intervalVector', 'forteName', 'cardinality', 'zMate', 'superSets', 'subSets'];
 const EMPTY_NOTES = [];
 
 function renderExpandIcon({ isActive }) {
@@ -88,36 +86,6 @@ SetCard.propTypes = {
   mode: PropTypes.oneOf(['chips', 'list']).isRequired,
 };
 
-async function saveJsonFile(json, forteName, successMessage) {
-  const fileName = `${forteName || 'pc-set'}.json`;
-
-  if ('showSaveFilePicker' in window) {
-    try {
-      const handle = await window.showSaveFilePicker({
-        suggestedName: fileName,
-        types: [{ description: 'JSON', accept: { 'application/json': ['.json'] } }],
-      });
-      const writable = await handle.createWritable();
-      await writable.write(json);
-      await writable.close();
-      message.success(successMessage);
-      return;
-    } catch (e) {
-      if (e.name === 'AbortError') { return; }
-      // Fall through to anchor fallback on unexpected errors
-    }
-  }
-
-  const blob = new Blob([json], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const anchor = document.createElement('a');
-  anchor.href = url;
-  anchor.download = fileName;
-  anchor.click();
-  URL.revokeObjectURL(url);
-  message.success(successMessage);
-}
-
 function buildSummaryTitle(title, activeData, t) {
   if (title) {
     return title;
@@ -128,33 +96,23 @@ function buildSummaryTitle(title, activeData, t) {
   return parts.length ? parts.join(' · ') : t('setTitle');
 }
 
-export default function PcSetCollapseCardAntD({ data, defaultOpen, title, abcNotes, onImport }) {
+export default function PcSetView({ data, defaultOpen, title, abcNotes }) {
   const { t } = useTranslation('educandu/pitch-analyzer');
   const [activeKey, setActiveKey] = useState(defaultOpen ? ['details'] : []);
   const [filter, setFilter] = useState('');
   const [mode, setMode] = useState('chips');
-  const [importedData, setImportedData] = useState(null);
-
-  const importFileRef = useRef(null);
-
-  const activeData = useMemo(() => importedData ?? data, [importedData, data]);
-
-  useEffect(() => {
-    setImportedData(null);
-  }, [data]);
 
   const superSets = useMemo(() => {
-    const v = activeData?.superSets;
+    const v = data?.superSets;
     return Array.isArray(v) ? v : [];
-  }, [activeData]);
+  }, [data]);
 
   const subSets = useMemo(() => {
-    const v = activeData?.subSets;
+    const v = data?.subSets;
     return Array.isArray(v) ? v : [];
-  }, [activeData]);
+  }, [data]);
 
-  const summaryTitle = useMemo(() => buildSummaryTitle(title, activeData, t), [title, activeData, t]);
-  const jsonExport = useMemo(() => JSON.stringify({ ...data, abcNotes }, null, 2), [data, abcNotes]);
+  const summaryTitle = useMemo(() => buildSummaryTitle(title, data, t), [title, data, t]);
   const filterNorm = useMemo(() => filter.trim().toLowerCase(), [filter]);
 
   const matchesFilter = useCallback(
@@ -173,72 +131,20 @@ export default function PcSetCollapseCardAntD({ data, defaultOpen, title, abcNot
   const handleFilterChange = useCallback(e => setFilter(e.target.value), []);
   const handleModeChange = useCallback(v => setMode(v), []);
 
-  const handleSave = useCallback(async e => {
-    e.stopPropagation();
-    await saveJsonFile(jsonExport, activeData?.forteName, t('saveSuccessMessage'));
-  }, [jsonExport, activeData, t]);
-
-  const handleImportClick = useCallback(e => {
-    e.stopPropagation();
-    importFileRef.current?.click();
-  }, []);
-
-  const handleImportFile = useCallback(async event => {
-    const { target } = event;
-    const file = target.files?.[0];
-    if (!file) { return; }
-    try {
-      const text = await file.text();
-      const parsed = JSON.parse(text);
-
-      const pcData = Object.fromEntries(
-        PC_SET_KEYS.filter(k => k in parsed).map(k => [k, parsed[k]])
-      );
-      if (Object.keys(pcData).length > 0) {
-        setImportedData(pcData);
-      }
-
-      if (onImport) {
-        const rawNotes = Array.isArray(parsed.abcNotes) && parsed.abcNotes.length > 0
-          ? parsed.abcNotes
-          : pcsetToAbcNotes(parsed);
-        const notes = sortAbcNotesByPitch(rawNotes);
-        if (notes.length > 0) {
-          onImport(notes);
-        }
-      }
-    } catch {
-      message.error(t('importErrorMessage'));
-    }
-    target.value = '';
-  }, [onImport, t]);
-
   const collapseItems = useMemo(() => [{
     key: 'details',
     label: (
       <Space direction="vertical" size={6} style={{ width: '100%' }}>
-        <Space wrap style={{ width: '100%', justifyContent: 'space-between' }}>
-          <Text strong style={{ fontSize: 16 }}>{summaryTitle}</Text>
-          <Space>
-            {!!onImport && (
-              <Button icon={<UploadOutlined />} onClick={handleImportClick}>
-                {t('importLabel')}
-              </Button>
-            )}
-            <Button icon={<DownloadOutlined />} onClick={handleSave}>
-              {t('jsonLabel')}
-            </Button>
-          </Space>
-        </Space>
+        <Text strong style={{ fontSize: 16 }}>{summaryTitle}</Text>
         <Space wrap>
-          {typeof activeData?.cardinality === 'number' && (
+          {typeof data?.cardinality === 'number' && (
             <Badge
-              count={t('cardinalityLabel', { count: activeData.cardinality })}
+              count={t('cardinalityLabel', { count: data.cardinality })}
               style={{ backgroundColor: '#f0f0f0', color: '#000' }}
               />
           )}
-          {activeData?.intervalVector ? <Tag>{t('intervalVectorLabel')} <Text>{activeData.intervalVector}</Text></Tag> : null}
-          {activeData?.zMate ? <Tag>{t('zMateLabel')} <Text>{activeData.zMate}</Text></Tag> : null}
+          {data?.intervalVector ? <Tag>{t('intervalVectorLabel')} <Text>{data.intervalVector}</Text></Tag> : null}
+          {data?.zMate ? <Tag>{t('zMateLabel')} <Text>{data.zMate}</Text></Tag> : null}
         </Space>
       </Space>
     ),
@@ -251,13 +157,13 @@ export default function PcSetCollapseCardAntD({ data, defaultOpen, title, abcNot
           style={{ borderRadius: 12, overflow: 'hidden' }}
           >
           <Descriptions.Item label={t('forteNameLabel')}>
-            <Text>{activeData?.forteName || null}</Text>
+            <Text>{data?.forteName || null}</Text>
           </Descriptions.Item>
           <Descriptions.Item label={t('fortePrimeFormLabel')}>
-            <Text>{activeData?.fortePrimeForm || null}</Text>
+            <Text>{data?.fortePrimeForm || null}</Text>
           </Descriptions.Item>
           <Descriptions.Item label={t('rahnPrimeFormLabel')}>
-            <Text>{activeData?.rahnPrimeForm || null}</Text>
+            <Text>{data?.rahnPrimeForm || null}</Text>
           </Descriptions.Item>
         </Descriptions>
 
@@ -292,32 +198,23 @@ export default function PcSetCollapseCardAntD({ data, defaultOpen, title, abcNot
       </Card>
     ),
   }], [
-    summaryTitle, onImport, handleImportClick, handleSave, activeData,
+    summaryTitle, data, abcNotes,
     filter, handleFilterChange, mode, handleModeChange,
     superSets, superFiltered, subSets, subFiltered, t,
   ]);
 
   return (
-    <React.Fragment>
-      <Collapse
-        defaultActiveKey={defaultOpen ? ['details'] : []}
-        activeKey={activeKey}
-        onChange={handleCollapseChange}
-        expandIcon={renderExpandIcon}
-        items={collapseItems}
-        />
-      <input
-        ref={importFileRef}
-        type="file"
-        accept=".json"
-        style={{ display: 'none' }}
-        onChange={handleImportFile}
-        />
-    </React.Fragment>
+    <Collapse
+      defaultActiveKey={defaultOpen ? ['details'] : []}
+      activeKey={activeKey}
+      onChange={handleCollapseChange}
+      expandIcon={renderExpandIcon}
+      items={collapseItems}
+      />
   );
 }
 
-PcSetCollapseCardAntD.propTypes = {
+PcSetView.propTypes = {
   data: PropTypes.shape({
     rahnPrimeForm: PropTypes.string,
     fortePrimeForm: PropTypes.string,
@@ -331,13 +228,11 @@ PcSetCollapseCardAntD.propTypes = {
   defaultOpen: PropTypes.bool,
   title: PropTypes.string,
   abcNotes: PropTypes.arrayOf(PropTypes.string),
-  onImport: PropTypes.func,
 };
 
-PcSetCollapseCardAntD.defaultProps = {
+PcSetView.defaultProps = {
   data: null,
   defaultOpen: false,
   title: null,
   abcNotes: EMPTY_NOTES,
-  onImport: null,
 };

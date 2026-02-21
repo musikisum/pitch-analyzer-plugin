@@ -111,6 +111,50 @@
     "saveSuccessMessage": {
       "en": "File saved",
       "de": "Datei gespeichert"
+    },
+    "taskMode": {
+      "en": "Task type",
+      "de": "Aufgabentyp"
+    },
+    "taskModeNone": {
+      "en": "None",
+      "de": "Keine"
+    },
+    "taskModeAbcCode": {
+      "en": "ABC notation",
+      "de": "ABC-Notation"
+    },
+    "taskModeImage": {
+      "en": "Image",
+      "de": "Bild"
+    },
+    "taskAbcCode": {
+      "en": "ABC notation",
+      "de": "ABC-Notation"
+    },
+    "taskDescription": {
+      "en": "Task description",
+      "de": "Aufgabenstellung"
+    },
+    "measurePlaceholder": {
+      "en": "Bars (e.g. T. 1–4)",
+      "de": "Takt (z.B. T. 1–4)"
+    },
+    "commentPlaceholder": {
+      "en": "Comment",
+      "de": "Anmerkung"
+    },
+    "saveResultLabel": {
+      "en": "Save result",
+      "de": "Ergebnis speichern"
+    },
+    "downloadAnalysisLabel": {
+      "en": "Download analysis.json",
+      "de": "analyse.json herunterladen"
+    },
+    "importAnalysisLabel": {
+      "en": "Import analysis.json",
+      "de": "analyse.json importieren"
     }
   }
 }

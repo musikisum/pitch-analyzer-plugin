@@ -1,9 +1,10 @@
 import joi from 'joi';
 import React from 'react';
 import { SoundOutlined } from '@ant-design/icons';
+import { TASK_MODE } from './constants.js';
 import cloneDeep from '@educandu/educandu/utils/clone-deep.js';
 import { PLUGIN_GROUP } from '@educandu/educandu/domain/constants.js';
-import { couldAccessUrlFromRoom } from '@educandu/educandu/utils/source-utils.js';
+import { isInternalSourceType, couldAccessUrlFromRoom } from '@educandu/educandu/utils/source-utils.js';
 import GithubFlavoredMarkdown from '@educandu/educandu/common/github-flavored-markdown.js';
 
 class PitchAnalyzerInfo {
@@ -39,16 +40,30 @@ class PitchAnalyzerInfo {
 
   getDefaultContent() {
     return {
-      text: '',
-      width: 100
+      width: 100,
+      taskMode: TASK_MODE.none,
+      taskWidth: 100,
+      taskDescription: '',
+      taskAbcCode: '',
+      taskImage: {
+        sourceUrl: '',
+        copyrightNotice: ''
+      }
     };
   }
 
   validateContent(content) {
     const schema = joi.object({
-      text: joi.string().allow('').required(),
-      width: joi.number().min(0).max(100).required()
-    });
+      width: joi.number().min(0).max(100).required(),
+      taskMode: joi.string().valid(...Object.values(TASK_MODE)).optional(),
+      taskWidth: joi.number().min(0).max(100).optional(),
+      taskDescription: joi.string().allow('').optional(),
+      taskAbcCode: joi.string().allow('').optional(),
+      taskImage: joi.object({
+        sourceUrl: joi.string().allow('').required(),
+        copyrightNotice: joi.string().allow('').required()
+      }).optional()
+    }).unknown(true);
 
     joi.attempt(content, schema, { abortEarly: false, convert: false, noDefaults: true });
   }
@@ -60,16 +75,34 @@ class PitchAnalyzerInfo {
   redactContent(content, targetRoomId) {
     const redactedContent = cloneDeep(content);
 
-    redactedContent.text = this.gfm.redactCdnResources(
-      redactedContent.text,
+    redactedContent.taskDescription = this.gfm.redactCdnResources(
+      redactedContent.taskDescription,
       url => couldAccessUrlFromRoom(url, targetRoomId) ? url : ''
     );
+
+    redactedContent.taskImage.copyrightNotice = this.gfm.redactCdnResources(
+      redactedContent.taskImage.copyrightNotice,
+      url => couldAccessUrlFromRoom(url, targetRoomId) ? url : ''
+    );
+
+    if (!couldAccessUrlFromRoom(redactedContent.taskImage.sourceUrl, targetRoomId)) {
+      redactedContent.taskImage.sourceUrl = '';
+    }
 
     return redactedContent;
   }
 
   getCdnResources(content) {
-    return this.gfm.extractCdnResources(content.text);
+    const cdnResources = [];
+
+    cdnResources.push(...this.gfm.extractCdnResources(content.taskDescription));
+    cdnResources.push(...this.gfm.extractCdnResources(content.taskImage.copyrightNotice));
+
+    if (isInternalSourceType({ url: content.taskImage.sourceUrl })) {
+      cdnResources.push(content.taskImage.sourceUrl);
+    }
+
+    return [...new Set(cdnResources)].filter(cdnResource => cdnResource);
   }
 }
 
