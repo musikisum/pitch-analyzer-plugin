@@ -1,0 +1,37 @@
+{
+  "01358": {
+    "en": ["major seventh ninth chord"],
+    "de": ["großer Mollseptnonakkord"],
+    "value": ["D♭j79"]
+  },
+  "0148": {
+    "en": ["major 7th minor chord"],
+    "de": ["großer Mollseptakkord"],
+    "value": ["D♭mj7"]
+  },
+  "0158": {
+    "en": ["major 7th chord"],
+    "de": ["großer Durseptakkord"],
+    "value": ["D♭j7"]
+  },
+  "02469": {
+    "en": ["dominant 9th chord"],
+    "de": ["Dominantseptnonakkord"],
+    "value": ["C79"]
+  },
+  "0358": {
+    "en": ["minor 7th chord"],
+    "de": ["kleiner Mollseptakkord"],
+    "value": ["Fm7"]
+  },
+  "0369": {
+    "en": ["diminished 7th chord"],
+    "de": ["ganzverminderter Septakkord"],
+    "value": ["Am♭5♭7"]
+  },
+  "0379": {
+    "en": ["half-diminished 7th chord", "dominant 7th chord"],
+    "de": ["halbverminderter Septakkord", "Dominantseptakkord"],
+    "value": ["Am♭57"]
+  }
+}

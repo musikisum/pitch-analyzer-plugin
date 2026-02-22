@@ -43,7 +43,66 @@ function moveItem(arr, fromIndex, toIndex) {
   return next;
 }
 
-export default function AnalysisLog({ pcSetData, abcNotes, onSelect }) {
+function AnalysisLogItem({ item, isSelected, dragHandleProps, isDragged, isOtherDragged, onSelect, onDelete }) {
+  return (
+    <div
+      className={[
+        'EP_Educandu_PitchAnalyzer_Display-analysisLogItem',
+        isSelected ? 'EP_Educandu_PitchAnalyzer_Display-analysisLogItem--selected' : '',
+        isDragged ? 'is-dragged' : '',
+        isOtherDragged ? 'is-other-dragged' : '',
+      ].filter(Boolean).join(' ')}
+      onClick={() => onSelect(item)}
+      >
+      <span
+        {...dragHandleProps}
+        className="EP_Educandu_PitchAnalyzer_Display-analysisLogItemHandle"
+        onClick={e => e.stopPropagation()}
+        >
+        <HolderOutlined />
+      </span>
+      <Space wrap style={{ flex: 1 }}>
+        {item.measure ? <Text strong>{item.measure}</Text> : null}
+        {item.pcSet?.forteName ? <Text code>{item.pcSet.forteName}</Text> : null}
+        {item.pcSet?.fortePrimeForm ? <Text type="secondary">[{item.pcSet.fortePrimeForm}]</Text> : null}
+        {item.chordLabel ? <Text>{item.chordLabel}</Text> : null}
+        {item.chordValue ? <Text type="secondary">{item.chordValue}</Text> : null}
+        {item.comment ? <Text type="secondary">— {item.comment}</Text> : null}
+      </Space>
+      <span className="EP_Educandu_PitchAnalyzer_Display-analysisLogItemActions">
+        <Button
+          type="text"
+          size="small"
+          danger
+          icon={<DeleteOutlined />}
+          onClick={e => { e.stopPropagation(); onDelete(item.key); }}
+          />
+      </span>
+    </div>
+  );
+}
+
+AnalysisLogItem.propTypes = {
+  item: PropTypes.shape({
+    key: PropTypes.string.isRequired,
+    measure: PropTypes.string,
+    comment: PropTypes.string,
+    chordLabel: PropTypes.string,
+    chordValue: PropTypes.string,
+    pcSet: PropTypes.shape({
+      forteName: PropTypes.string,
+      fortePrimeForm: PropTypes.string,
+    }),
+  }).isRequired,
+  isSelected: PropTypes.bool.isRequired,
+  dragHandleProps: PropTypes.object.isRequired,
+  isDragged: PropTypes.bool.isRequired,
+  isOtherDragged: PropTypes.bool.isRequired,
+  onSelect: PropTypes.func.isRequired,
+  onDelete: PropTypes.func.isRequired,
+};
+
+export default function AnalysisLog({ pcSetData, abcNotes, onSelect, chordLabel, chordValue }) {
   const { t } = useTranslation('educandu/pitch-analyzer');
   const importFileRef = useRef(null);
   const [measure, setMeasure] = useState('');
@@ -57,7 +116,9 @@ export default function AnalysisLog({ pcSetData, abcNotes, onSelect }) {
       measure,
       comment,
       abcNotes: [...abcNotes],
-      pcSet: { ...pcSetData }
+      pcSet: { ...pcSetData },
+      chordLabel: chordLabel || null,
+      chordValue: chordValue || null,
     };
     setResults(prev => [...prev, entry]);
     setMeasure('');
@@ -66,11 +127,18 @@ export default function AnalysisLog({ pcSetData, abcNotes, onSelect }) {
   };
 
   const handleUpdate = () => {
-    setResults(prev => prev.map(item =>
-      item.key === selectedKey
-        ? { ...item, measure, comment, abcNotes: [...abcNotes], pcSet: { ...pcSetData } }
-        : item
-    ));
+    setResults(prev => prev.map(item => {
+      if (item.key !== selectedKey) { return item; }
+      return {
+        ...item,
+        measure,
+        comment,
+        abcNotes: [...abcNotes],
+        pcSet: { ...pcSetData },
+        chordLabel: chordLabel || null,
+        chordValue: chordValue || null,
+      };
+    }));
   };
 
   const handleDelete = key => {
@@ -92,14 +160,6 @@ export default function AnalysisLog({ pcSetData, abcNotes, onSelect }) {
     onSelect(item.abcNotes);
   };
 
-  const handleItemMove = (fromIndex, toIndex) => {
-    setResults(prev => moveItem(prev, fromIndex, toIndex));
-  };
-
-  const handleDownload = () => {
-    downloadJson(results, 'analyse.json', t('saveSuccessMessage'));
-  };
-
   const handleImportClick = () => {
     importFileRef.current?.click();
   };
@@ -114,7 +174,7 @@ export default function AnalysisLog({ pcSetData, abcNotes, onSelect }) {
       if (Array.isArray(parsed)) {
         const withKeys = parsed.map((item, i) => ({
           key: item.key || `entry-${Date.now()}-${i}`,
-          ...item
+          ...item,
         }));
         setResults(withKeys);
         setSelectedKey(null);
@@ -125,46 +185,23 @@ export default function AnalysisLog({ pcSetData, abcNotes, onSelect }) {
     target.value = '';
   };
 
-  const isSaveDisabled = abcNotes.length === 0;
-  const isUpdateDisabled = abcNotes.length === 0 || selectedKey === null;
-
   const dragAndDropItems = results.map(item => ({
     key: item.key,
     render: ({ dragHandleProps, isDragged, isOtherDragged }) => (
-      <div
-        className={[
-          'EP_Educandu_PitchAnalyzer_Display-analysisLogItem',
-          item.key === selectedKey ? 'EP_Educandu_PitchAnalyzer_Display-analysisLogItem--selected' : '',
-          isDragged ? 'is-dragged' : '',
-          isOtherDragged ? 'is-other-dragged' : ''
-        ].filter(Boolean).join(' ')}
-        onClick={() => handleSelect(item)}
-        >
-        <span
-          {...dragHandleProps}
-          className="EP_Educandu_PitchAnalyzer_Display-analysisLogItemHandle"
-          onClick={e => e.stopPropagation()}
-          >
-          <HolderOutlined />
-        </span>
-        <Space wrap style={{ flex: 1 }}>
-          {item.measure ? <Text strong>{item.measure}</Text> : null}
-          {item.pcSet?.forteName ? <Text code>{item.pcSet.forteName}</Text> : null}
-          {item.pcSet?.fortePrimeForm ? <Text type="secondary">[{item.pcSet.fortePrimeForm}]</Text> : null}
-          {item.comment ? <Text type="secondary">— {item.comment}</Text> : null}
-        </Space>
-        <span className="EP_Educandu_PitchAnalyzer_Display-analysisLogItemActions">
-          <Button
-            type="text"
-            size="small"
-            danger
-            icon={<DeleteOutlined />}
-            onClick={e => { e.stopPropagation(); handleDelete(item.key); }}
-            />
-        </span>
-      </div>
-    )
+      <AnalysisLogItem
+        item={item}
+        isSelected={item.key === selectedKey}
+        dragHandleProps={dragHandleProps}
+        isDragged={isDragged}
+        isOtherDragged={isOtherDragged}
+        onSelect={handleSelect}
+        onDelete={handleDelete}
+        />
+    ),
   }));
+
+  const isSaveDisabled = abcNotes.length === 0;
+  const isUpdateDisabled = abcNotes.length === 0 || selectedKey === null;
 
   return (
     <div className="EP_Educandu_PitchAnalyzer_Display-analysisLog">
@@ -181,18 +218,10 @@ export default function AnalysisLog({ pcSetData, abcNotes, onSelect }) {
           placeholder={t('commentPlaceholder')}
           style={{ width: 260 }}
           />
-        <Button
-          icon={<SaveOutlined />}
-          disabled={isSaveDisabled}
-          onClick={handleSave}
-          >
+        <Button icon={<SaveOutlined />} disabled={isSaveDisabled} onClick={handleSave}>
           {t('saveResultLabel')}
         </Button>
-        <Button
-          icon={<RedoOutlined />}
-          disabled={isUpdateDisabled}
-          onClick={handleUpdate}
-          >
+        <Button icon={<RedoOutlined />} disabled={isUpdateDisabled} onClick={handleUpdate}>
           {t('updateResultLabel')}
         </Button>
       </Space>
@@ -203,11 +232,11 @@ export default function AnalysisLog({ pcSetData, abcNotes, onSelect }) {
             <DragAndDropContainer
               droppableId="analysis-log"
               items={dragAndDropItems}
-              onItemMove={handleItemMove}
+              onItemMove={(from, to) => setResults(prev => moveItem(prev, from, to))}
               />
           </div>
           <Space style={{ marginTop: 8 }}>
-            <Button icon={<DownloadOutlined />} onClick={handleDownload}>
+            <Button icon={<DownloadOutlined />} onClick={() => downloadJson(results, 'analyse.json', t('saveSuccessMessage'))}>
               {t('downloadAnalysisLabel')}
             </Button>
             <Button icon={<UploadOutlined />} onClick={handleImportClick}>
@@ -247,8 +276,12 @@ AnalysisLog.propTypes = {
   }),
   abcNotes: PropTypes.arrayOf(PropTypes.string).isRequired,
   onSelect: PropTypes.func.isRequired,
+  chordLabel: PropTypes.string,
+  chordValue: PropTypes.string,
 };
 
 AnalysisLog.defaultProps = {
   pcSetData: null,
+  chordLabel: null,
+  chordValue: null,
 };

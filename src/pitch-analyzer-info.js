@@ -48,7 +48,8 @@ class PitchAnalyzerInfo {
       taskImage: {
         sourceUrl: '',
         copyrightNotice: ''
-      }
+      },
+      chordMap: null
     };
   }
 

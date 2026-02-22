@@ -22,11 +22,47 @@
     }
   }
 
-  &-taskDescription {
-    padding: 12px 16px;
+  &-taskDescriptionContainer {
+    display: flex;
+    flex-direction: column;
     background: #f6f8fa;
     border-left: 3px solid #d9d9d9;
     border-radius: 0 4px 4px 0;
+    overflow: hidden;
+  }
+
+  &-taskAudioPlayer {
+    border-bottom: 1px solid #d9d9d9;
+  }
+
+  &-taskDescription {
+    padding: 12px 16px;
+  }
+
+  &-chordMatch {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    background: #f0f9eb;
+    border: 1px solid #b7eb8f;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+
+  &-chordMatchLabel {
+    color: #52c41a;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+
+  &-chordMatchValue {
+    color: #262626;
+    word-break: break-word;
+
+    &--secondary {
+      color: #8c8c8c;
+    }
   }
 
   &-analysisLog {

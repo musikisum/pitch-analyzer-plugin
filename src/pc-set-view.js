@@ -1,11 +1,10 @@
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { DownOutlined, SearchOutlined } from '@ant-design/icons';
 import { Badge, Card, Collapse, Descriptions, Divider, Input, Segmented, Space, Tag, Typography } from 'antd';
 
 const { Text } = Typography;
-const EMPTY_NOTES = [];
 
 function renderExpandIcon({ isActive }) {
   return (
@@ -20,16 +19,9 @@ function renderExpandIcon({ isActive }) {
 }
 
 function ChipTag({ value }) {
-  const label = value === '' ? '∅' : value;
   return (
-    <Tag
-      style={{
-        marginInlineEnd: 8,
-        marginBottom: 8,
-        borderRadius: 999
-      }}
-      >
-      {label}
+    <Tag style={{ marginInlineEnd: 8, marginBottom: 8, borderRadius: 999 }}>
+      {value === '' ? '∅' : value}
     </Tag>
   );
 }
@@ -86,52 +78,95 @@ SetCard.propTypes = {
   mode: PropTypes.oneOf(['chips', 'list']).isRequired,
 };
 
-function buildSummaryTitle(title, activeData, t) {
-  if (title) {
-    return title;
-  }
-  const parts = [];
-  if (activeData?.forteName) { parts.push(activeData.forteName); }
-  if (activeData?.fortePrimeForm) { parts.push(`PF [${activeData.fortePrimeForm}]`); }
-  return parts.length ? parts.join(' · ') : t('setTitle');
-}
-
-export default function PcSetView({ data, defaultOpen, title, abcNotes }) {
+function PcSetDetailsPanel({ data, superSets, subSets }) {
   const { t } = useTranslation('educandu/pitch-analyzer');
-  const [activeKey, setActiveKey] = useState(defaultOpen ? ['details'] : []);
   const [filter, setFilter] = useState('');
   const [mode, setMode] = useState('chips');
 
-  const superSets = useMemo(() => {
-    const v = data?.superSets;
-    return Array.isArray(v) ? v : [];
-  }, [data]);
+  const filterNorm = filter.trim().toLowerCase();
+  const matches = s => !filterNorm || String(s === '' ? '∅' : s).toLowerCase().includes(filterNorm);
+  const superFiltered = superSets.filter(matches);
+  const subFiltered = subSets.filter(matches);
 
-  const subSets = useMemo(() => {
-    const v = data?.subSets;
-    return Array.isArray(v) ? v : [];
-  }, [data]);
+  return (
+    <Card style={{ borderRadius: 16 }} styles={{ body: { padding: 16 } }}>
+      <Descriptions
+        size="small"
+        column={{ xs: 1, sm: 3, md: 3, lg: 3 }}
+        bordered
+        style={{ borderRadius: 12, overflow: 'hidden' }}
+        >
+        <Descriptions.Item label={t('forteNameLabel')}>
+          <Text>{data?.forteName || null}</Text>
+        </Descriptions.Item>
+        <Descriptions.Item label={t('fortePrimeFormLabel')}>
+          <Text>{data?.fortePrimeForm || null}</Text>
+        </Descriptions.Item>
+        <Descriptions.Item label={t('rahnPrimeFormLabel')}>
+          <Text>{data?.rahnPrimeForm || null}</Text>
+        </Descriptions.Item>
+      </Descriptions>
 
-  const summaryTitle = useMemo(() => buildSummaryTitle(title, data, t), [title, data, t]);
-  const filterNorm = useMemo(() => filter.trim().toLowerCase(), [filter]);
+      <Divider style={{ marginBlock: 16 }} />
 
-  const matchesFilter = useCallback(
-    s => {
-      if (!filterNorm) { return true; }
-      const label = s === '' ? '∅' : s;
-      return String(label).toLowerCase().includes(filterNorm);
-    },
-    [filterNorm]
+      <Space wrap style={{ width: '100%', justifyContent: 'space-between', marginBottom: 12 }}>
+        <Input
+          allowClear
+          value={filter}
+          onChange={e => setFilter(e.target.value)}
+          prefix={<SearchOutlined />}
+          placeholder={t('filterPlaceholder')}
+          style={{ maxWidth: 360, borderRadius: 10 }}
+          />
+        <Segmented
+          value={mode}
+          onChange={setMode}
+          options={[
+            { label: t('chipsLabel'), value: 'chips' },
+            { label: t('listLabel'), value: 'list' },
+          ]}
+          />
+      </Space>
+
+      <Space direction="vertical" size={16} style={{ width: '100%' }}>
+        <SetCard title={t('superSetsLabel')} all={superSets} filtered={superFiltered} mode={mode} />
+        <SetCard title={t('subSetsLabel')} all={subSets} filtered={subFiltered} mode={mode} />
+      </Space>
+    </Card>
   );
+}
 
-  const superFiltered = useMemo(() => superSets.filter(matchesFilter), [superSets, matchesFilter]);
-  const subFiltered = useMemo(() => subSets.filter(matchesFilter), [subSets, matchesFilter]);
+PcSetDetailsPanel.propTypes = {
+  data: PropTypes.shape({
+    forteName: PropTypes.string,
+    fortePrimeForm: PropTypes.string,
+    rahnPrimeForm: PropTypes.string,
+  }),
+  superSets: PropTypes.arrayOf(PropTypes.string).isRequired,
+  subSets: PropTypes.arrayOf(PropTypes.string).isRequired,
+};
 
-  const handleCollapseChange = useCallback(k => setActiveKey(k), []);
-  const handleFilterChange = useCallback(e => setFilter(e.target.value), []);
-  const handleModeChange = useCallback(v => setMode(v), []);
+PcSetDetailsPanel.defaultProps = {
+  data: null,
+};
 
-  const collapseItems = useMemo(() => [{
+function buildSummaryTitle(title, data, t) {
+  if (title) { return title; }
+  const parts = [];
+  if (data?.forteName) { parts.push(data.forteName); }
+  if (data?.fortePrimeForm) { parts.push(`PF [${data.fortePrimeForm}]`); }
+  return parts.length ? parts.join(' · ') : t('setTitle');
+}
+
+export default function PcSetView({ data, defaultOpen, title }) {
+  const { t } = useTranslation('educandu/pitch-analyzer');
+  const [activeKey, setActiveKey] = useState(defaultOpen ? ['details'] : []);
+
+  const superSets = Array.isArray(data?.superSets) ? data.superSets : [];
+  const subSets = Array.isArray(data?.subSets) ? data.subSets : [];
+  const summaryTitle = buildSummaryTitle(title, data, t);
+
+  const collapseItems = [{
     key: 'details',
     label: (
       <Space direction="vertical" size={6} style={{ width: '100%' }}>
@@ -148,66 +183,14 @@ export default function PcSetView({ data, defaultOpen, title, abcNotes }) {
         </Space>
       </Space>
     ),
-    children: (
-      <Card style={{ borderRadius: 16 }} styles={{ body: { padding: 16 } }}>
-        <Descriptions
-          size="small"
-          column={{ xs: 1, sm: 3, md: 3, lg: 3 }}
-          bordered
-          style={{ borderRadius: 12, overflow: 'hidden' }}
-          >
-          <Descriptions.Item label={t('forteNameLabel')}>
-            <Text>{data?.forteName || null}</Text>
-          </Descriptions.Item>
-          <Descriptions.Item label={t('fortePrimeFormLabel')}>
-            <Text>{data?.fortePrimeForm || null}</Text>
-          </Descriptions.Item>
-          <Descriptions.Item label={t('rahnPrimeFormLabel')}>
-            <Text>{data?.rahnPrimeForm || null}</Text>
-          </Descriptions.Item>
-        </Descriptions>
-
-        <Divider style={{ marginBlock: 16 }} />
-
-        <Space
-          wrap
-          style={{ width: '100%', justifyContent: 'space-between', marginBottom: 12 }}
-          >
-          <Input
-            allowClear
-            value={filter}
-            onChange={handleFilterChange}
-            prefix={<SearchOutlined />}
-            placeholder={t('filterPlaceholder')}
-            style={{ maxWidth: 360, borderRadius: 10 }}
-            />
-          <Segmented
-            value={mode}
-            onChange={handleModeChange}
-            options={[
-              { label: t('chipsLabel'), value: 'chips' },
-              { label: t('listLabel'), value: 'list' },
-            ]}
-            />
-        </Space>
-
-        <Space direction="vertical" size={16} style={{ width: '100%' }}>
-          <SetCard title={t('superSetsLabel')} all={superSets} filtered={superFiltered} mode={mode} />
-          <SetCard title={t('subSetsLabel')} all={subSets} filtered={subFiltered} mode={mode} />
-        </Space>
-      </Card>
-    ),
-  }], [
-    summaryTitle, data, abcNotes,
-    filter, handleFilterChange, mode, handleModeChange,
-    superSets, superFiltered, subSets, subFiltered, t,
-  ]);
+    children: <PcSetDetailsPanel data={data} superSets={superSets} subSets={subSets} />,
+  }];
 
   return (
     <Collapse
       defaultActiveKey={defaultOpen ? ['details'] : []}
       activeKey={activeKey}
-      onChange={handleCollapseChange}
+      onChange={setActiveKey}
       expandIcon={renderExpandIcon}
       items={collapseItems}
       />
@@ -227,12 +210,10 @@ PcSetView.propTypes = {
   }),
   defaultOpen: PropTypes.bool,
   title: PropTypes.string,
-  abcNotes: PropTypes.arrayOf(PropTypes.string),
 };
 
 PcSetView.defaultProps = {
   data: null,
   defaultOpen: false,
   title: null,
-  abcNotes: EMPTY_NOTES,
 };

@@ -3,3 +3,9 @@ export const TASK_MODE = {
   abcCode: 'abcCode',
   image: 'image'
 };
+
+export const TASK_AUDIO_TYPE = {
+  none: 'none',
+  abcPlayer: 'abcPlayer',
+  urlAudio: 'urlAudio'
+};

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import PcSetView from './pc-set-view.js';
 import AnalysisLog from './analysis-log.js';
 import InputSection from './input-section.js';
-import { TASK_MODE } from './constants.js';
+import { TASK_MODE, TASK_AUDIO_TYPE } from './constants.js';
 import { useTranslation } from 'react-i18next';
 import abcPcsetAdapter from './adapter-abc-pcset.js';
 import Markdown from '@educandu/educandu/components/markdown.js';
@@ -11,15 +11,18 @@ import AbcNotation from '@educandu/educandu/components/abc-notation.js';
 import ClientConfig from '@educandu/educandu/bootstrap/client-config.js';
 import CopyrightNotice from '@educandu/educandu/components/copyright-notice.js';
 import { useService } from '@educandu/educandu/components/container-context.js';
-import { getAccessibleUrl } from '@educandu/educandu/utils/source-utils.js';
+import { getAccessibleUrl, isInternalSourceType } from '@educandu/educandu/utils/source-utils.js';
 import { sectionDisplayProps } from '@educandu/educandu/ui/default-prop-types.js';
+import MediaPlayer from '@educandu/educandu/components/media-player/media-player.js';
+import { MEDIA_SCREEN_MODE } from '@educandu/educandu/domain/constants.js';
 
 export default function PitchAnalyzerDisplay({ content }) {
 
-  const { t } = useTranslation('educandu/pitch-analyzer');
+  const { t, i18n } = useTranslation('educandu/pitch-analyzer');
   const clientConfig = useService(ClientConfig);
   const [abcNotes, setAbcNotes] = useState([]);
   const [lastRenderResult, setLastRenderResult] = useState(null);
+  const [taskRenderResult, setTaskRenderResult] = useState(null);
   const pcSetData = abcPcsetAdapter(abcNotes);
 
   const {
@@ -28,6 +31,9 @@ export default function PitchAnalyzerDisplay({ content }) {
     taskDescription = '',
     taskAbcCode = '',
     taskImage = { sourceUrl: '', copyrightNotice: '' },
+    taskAudioType = TASK_AUDIO_TYPE.none,
+    taskAudioSourceUrl = '',
+    chordMap = null,
     width
   } = content;
 
@@ -38,7 +44,17 @@ export default function PitchAnalyzerDisplay({ content }) {
     return `X:1\nL:1/1\nK:C\n${abcNotes.join('')}`;
   };
 
+  const chordMatch = chordMap && pcSetData?.rahnPrimeForm ? chordMap[pcSetData.rahnPrimeForm] : null;
+  const chordLang = i18n.language?.startsWith('de') ? 'de' : 'en';
+  const chordLabelRaw = chordMatch?.[chordLang] ?? chordMatch?.en;
+  const chordValueRaw = chordMatch?.value;
+  const chordLabelText = Array.isArray(chordLabelRaw) ? chordLabelRaw.join(', ') : (chordLabelRaw || null);
+  const chordValueText = Array.isArray(chordValueRaw) ? chordValueRaw.join(', ') : (chordValueRaw || null);
+
   const hasTaskContent = taskMode !== TASK_MODE.none || !!taskDescription;
+  const hasDescriptionOrAudio = !!taskDescription
+    || (taskAudioType === TASK_AUDIO_TYPE.abcPlayer && taskMode === TASK_MODE.abcCode)
+    || (taskAudioType === TASK_AUDIO_TYPE.urlAudio && !!taskAudioSourceUrl);
 
   return (
     <div className="EP_Educandu_PitchAnalyzer_Display">
@@ -49,7 +65,7 @@ export default function PitchAnalyzerDisplay({ content }) {
             <div className={`EP_Educandu_PitchAnalyzer_Display-taskSection u-horizontally-centered u-width-${taskWidth}`}>
               {taskMode === TASK_MODE.abcCode && taskAbcCode && (
                 <div className="EP_Educandu_PitchAnalyzer_Display-taskNotation">
-                  <AbcNotation abcCode={taskAbcCode} />
+                  <AbcNotation abcCode={taskAbcCode} onRender={setTaskRenderResult} />
                 </div>
               )}
               {taskMode === TASK_MODE.image && taskImage.sourceUrl && (
@@ -63,11 +79,29 @@ export default function PitchAnalyzerDisplay({ content }) {
                   )}
                 </div>
               )}
-              {taskDescription && (
-                <div className="EP_Educandu_PitchAnalyzer_Display-taskDescription">
-                  <Markdown>{taskDescription}</Markdown>
-                </div>
-              )}
+              {hasDescriptionOrAudio && <div className="EP_Educandu_PitchAnalyzer_Display-taskDescriptionContainer">
+                {taskAudioType === TASK_AUDIO_TYPE.abcPlayer && taskMode === TASK_MODE.abcCode && (
+                  <div className="EP_Educandu_PitchAnalyzer_Display-taskAudioPlayer">
+                    <AbcPlayer renderResult={taskRenderResult} />
+                  </div>
+                )}
+                {taskAudioType === TASK_AUDIO_TYPE.urlAudio && taskAudioSourceUrl && (
+                  <div className="EP_Educandu_PitchAnalyzer_Display-taskAudioPlayer">
+                    <MediaPlayer
+                      sourceUrl={getAccessibleUrl({ url: taskAudioSourceUrl, cdnRootUrl: clientConfig.cdnRootUrl })}
+                      screenMode={MEDIA_SCREEN_MODE.none}
+                      allowDownload={isInternalSourceType({ url: taskAudioSourceUrl, cdnRootUrl: clientConfig.cdnRootUrl })}
+                      allowLoop
+                      allowPlaybackRate
+                      />
+                  </div>
+                )}
+                {taskDescription && (
+                  <div className="EP_Educandu_PitchAnalyzer_Display-taskDescription">
+                    <Markdown>{taskDescription}</Markdown>
+                  </div>
+                )}
+              </div>}
             </div>
           )}
 
@@ -88,9 +122,33 @@ export default function PitchAnalyzerDisplay({ content }) {
             <AbcPlayer renderResult={lastRenderResult} />
           </div>
 
-          <PcSetView data={pcSetData} abcNotes={abcNotes} defaultOpen={false} />
+          <PcSetView data={pcSetData} defaultOpen={false} />
 
-          <AnalysisLog pcSetData={pcSetData} abcNotes={abcNotes} onSelect={setAbcNotes} />
+          {chordMatch && (
+            <div className="EP_Educandu_PitchAnalyzer_Display-chordMatch">
+              <span className="EP_Educandu_PitchAnalyzer_Display-chordMatchLabel">
+                {t('chordMatchLabel')}:
+              </span>
+              {chordLabelText && (
+                <span className="EP_Educandu_PitchAnalyzer_Display-chordMatchValue">
+                  {chordLabelText}
+                </span>
+              )}
+              {chordValueText && (
+                <span className="EP_Educandu_PitchAnalyzer_Display-chordMatchValue EP_Educandu_PitchAnalyzer_Display-chordMatchValue--secondary">
+                  {chordValueText}
+                </span>
+              )}
+            </div>
+          )}
+
+          <AnalysisLog
+            pcSetData={pcSetData}
+            abcNotes={abcNotes}
+            onSelect={setAbcNotes}
+            chordLabel={chordLabelText}
+            chordValue={chordValueText}
+            />
         </div>
       </div>
     </div>

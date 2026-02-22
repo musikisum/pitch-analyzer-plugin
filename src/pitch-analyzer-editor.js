@@ -1,6 +1,7 @@
-import React from 'react';
-import { Form, Radio } from 'antd';
-import { TASK_MODE } from './constants.js';
+import React, { useRef } from 'react';
+import { Button, Form, message, Radio, Space, Typography } from 'antd';
+import { UploadOutlined } from '@ant-design/icons';
+import { TASK_MODE, TASK_AUDIO_TYPE } from './constants.js';
 import { useTranslation } from 'react-i18next';
 import Info from '@educandu/educandu/components/info.js';
 import AbcInput from '@educandu/educandu/components/abc-input.js';
@@ -12,18 +13,23 @@ import CopyrightNoticeEditor from '@educandu/educandu/components/copyright-notic
 import { FORM_ITEM_LAYOUT, FORM_ITEM_LAYOUT_VERTICAL, SOURCE_TYPE } from '@educandu/educandu/domain/constants.js';
 import { ensureIsExcluded } from '@educandu/educandu/utils/array-utils.js';
 
+const { Text } = Typography;
 const FormItem = Form.Item;
 const RadioGroup = Radio.Group;
 const RadioButton = Radio.Button;
 
 export default function PitchAnalyzerEditor({ content, onContentChanged }) {
   const { t } = useTranslation('educandu/pitch-analyzer');
+  const chordMapFileRef = useRef(null);
   const {
     taskMode = TASK_MODE.none,
     taskWidth = 100,
     taskDescription = '',
     taskAbcCode = '',
     taskImage = { sourceUrl: '', copyrightNotice: '' },
+    taskAudioType = TASK_AUDIO_TYPE.none,
+    taskAudioSourceUrl = '',
+    chordMap = null,
     width
   } = content;
 
@@ -55,8 +61,39 @@ export default function PitchAnalyzerEditor({ content, onContentChanged }) {
     updateContent({ taskDescription: event.target.value });
   };
 
+  const handleTaskAudioTypeChange = event => {
+    updateContent({ taskAudioType: event.target.value });
+  };
+
+  const handleTaskAudioSourceUrlChange = value => {
+    updateContent({ taskAudioSourceUrl: value });
+  };
+
   const handleWidthChange = value => {
     updateContent({ width: value });
+  };
+
+  const handleChordMapUploadClick = () => {
+    chordMapFileRef.current?.click();
+  };
+
+  const handleChordMapFile = async event => {
+    const file = event.target.files?.[0];
+    if (!file) { return; }
+    try {
+      const text = await file.text();
+      const parsed = JSON.parse(text);
+      if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+        updateContent({ chordMap: parsed });
+      }
+    } catch {
+      message.error(t('importErrorMessage'));
+    }
+    event.target.value = '';
+  };
+
+  const handleChordMapClear = () => {
+    updateContent({ chordMap: null });
   };
 
   return (
@@ -109,6 +146,52 @@ export default function PitchAnalyzerEditor({ content, onContentChanged }) {
 
         <FormItem label={t('taskDescription')} {...FORM_ITEM_LAYOUT_VERTICAL}>
           <MarkdownInput value={taskDescription} onChange={handleTaskDescriptionChange} renderAnchors />
+        </FormItem>
+
+        {taskMode !== TASK_MODE.none && (
+          <FormItem label={t('taskAudioType')} {...FORM_ITEM_LAYOUT}>
+            <RadioGroup value={taskAudioType} onChange={handleTaskAudioTypeChange}>
+              <RadioButton value={TASK_AUDIO_TYPE.none}>{t('taskAudioTypeNone')}</RadioButton>
+              {taskMode === TASK_MODE.abcCode && (
+                <RadioButton value={TASK_AUDIO_TYPE.abcPlayer}>{t('taskAudioTypeAbcPlayer')}</RadioButton>
+              )}
+              <RadioButton value={TASK_AUDIO_TYPE.urlAudio}>{t('taskAudioTypeUrlAudio')}</RadioButton>
+            </RadioGroup>
+          </FormItem>
+        )}
+
+        {taskMode !== TASK_MODE.none && taskAudioType === TASK_AUDIO_TYPE.urlAudio && (
+          <FormItem label={t('taskAudioSourceUrl')} {...FORM_ITEM_LAYOUT}>
+            <UrlInput
+              value={taskAudioSourceUrl}
+              onChange={handleTaskAudioSourceUrlChange}
+              />
+          </FormItem>
+        )}
+
+        <FormItem label={t('chordMapLabel')} {...FORM_ITEM_LAYOUT}>
+          <Space wrap>
+            <Button icon={<UploadOutlined />} onClick={handleChordMapUploadClick}>
+              {t('chordMapUploadLabel')}
+            </Button>
+            {chordMap && (
+              <Text type="secondary">
+                {t('chordMapEntriesCount', { count: Object.keys(chordMap).length })}
+              </Text>
+            )}
+            {chordMap && (
+              <Button size="small" danger onClick={handleChordMapClear}>
+                {t('chordMapClearLabel')}
+              </Button>
+            )}
+          </Space>
+          <input
+            ref={chordMapFileRef}
+            type="file"
+            accept=".json"
+            style={{ display: 'none' }}
+            onChange={handleChordMapFile}
+            />
         </FormItem>
 
         <FormItem

@@ -119,3 +119,33 @@ educandu/pitch-analyzer:
   updateResultLabel:
     en: Update result
     de: Analyse aktualisieren
+  chordMapLabel:
+    en: Chord Map
+    de: Akkord-Tabelle
+  chordMapUploadLabel:
+    en: Upload JSON
+    de: JSON hochladen
+  chordMapEntriesCount:
+    en: "{count} entries"
+    de: "{count} Einträge"
+  chordMapClearLabel:
+    en: Remove
+    de: Entfernen
+  chordMatchLabel:
+    en: Chord
+    de: Akkord
+  taskAudioType:
+    en: Audio
+    de: Audio
+  taskAudioTypeNone:
+    en: None
+    de: Keines
+  taskAudioTypeAbcPlayer:
+    en: ABC player
+    de: ABC-Player
+  taskAudioTypeUrlAudio:
+    en: Audio file
+    de: Audiodatei
+  taskAudioSourceUrl:
+    en: Audio URL
+    de: Audio-URL
