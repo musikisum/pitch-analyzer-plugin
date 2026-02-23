@@ -145,20 +145,16 @@ export default function PitchAnalyzerEditor({ content, onContentChanged }) {
           </FormItem>
         )}
 
-        <FormItem label={t('taskDescription')} {...FORM_ITEM_LAYOUT_VERTICAL}>
-          <MarkdownInput value={taskDescription} onChange={handleTaskDescriptionChange} renderAnchors />
-        </FormItem>
-
         {taskMode !== TASK_MODE.none && (
-          <FormItem label={t('taskAudioType')} {...FORM_ITEM_LAYOUT}>
-            <RadioGroup value={taskAudioType} onChange={handleTaskAudioTypeChange}>
-              <RadioButton value={TASK_AUDIO_TYPE.none}>{t('taskAudioTypeNone')}</RadioButton>
-              {taskMode === TASK_MODE.abcCode && (
-                <RadioButton value={TASK_AUDIO_TYPE.abcPlayer}>{t('taskAudioTypeAbcPlayer')}</RadioButton>
-              )}
-              <RadioButton value={TASK_AUDIO_TYPE.urlAudio}>{t('taskAudioTypeUrlAudio')}</RadioButton>
-            </RadioGroup>
-          </FormItem>
+        <FormItem label={t('taskAudioType')} {...FORM_ITEM_LAYOUT}>
+          <RadioGroup value={taskAudioType} onChange={handleTaskAudioTypeChange}>
+            <RadioButton value={TASK_AUDIO_TYPE.none}>{t('taskAudioTypeNone')}</RadioButton>
+            {taskMode === TASK_MODE.abcCode && (
+            <RadioButton value={TASK_AUDIO_TYPE.abcPlayer}>{t('taskAudioTypeAbcPlayer')}</RadioButton>
+            )}
+            <RadioButton value={TASK_AUDIO_TYPE.urlAudio}>{t('taskAudioTypeUrlAudio')}</RadioButton>
+          </RadioGroup>
+        </FormItem>
         )}
 
         {taskMode !== TASK_MODE.none && taskAudioType === TASK_AUDIO_TYPE.urlAudio && (
@@ -193,6 +189,10 @@ export default function PitchAnalyzerEditor({ content, onContentChanged }) {
             style={{ display: 'none' }}
             onChange={handleChordMapFile}
             />
+        </FormItem>
+
+        <FormItem label={t('taskDescription')} {...FORM_ITEM_LAYOUT}>
+          <MarkdownInput value={taskDescription} onChange={handleTaskDescriptionChange} renderAnchors />
         </FormItem>
 
         <FormItem
