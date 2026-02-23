@@ -48,8 +48,8 @@ export default function PitchAnalyzerDisplay({ content }) {
   const chordLang = i18n.language?.startsWith('de') ? 'de' : 'en';
   const chordLabelRaw = chordMatch?.[chordLang] ?? chordMatch?.en;
   const chordValueRaw = chordMatch?.value;
-  const chordLabelText = Array.isArray(chordLabelRaw) ? chordLabelRaw.join(', ') : (chordLabelRaw || null);
-  const chordValueText = Array.isArray(chordValueRaw) ? chordValueRaw.join(', ') : (chordValueRaw || null);
+  const chordLabelText = Array.isArray(chordLabelRaw) ? chordLabelRaw.join(', ') : chordLabelRaw || null;
+  const chordValueText = Array.isArray(chordValueRaw) ? chordValueRaw.join(', ') : chordValueRaw || null;
 
   const hasTaskContent = taskMode !== TASK_MODE.none || !!taskDescription;
   const hasDescriptionOrAudio = !!taskDescription
@@ -61,47 +61,49 @@ export default function PitchAnalyzerDisplay({ content }) {
       <div className={`u-horizontally-centered u-width-${width}`}>
         <div className="EP_Educandu_PitchAnalyzer_Display-content">
 
-          {hasTaskContent && (
+          {!!hasTaskContent && (
             <div className={`EP_Educandu_PitchAnalyzer_Display-taskSection u-horizontally-centered u-width-${taskWidth}`}>
-              {taskMode === TASK_MODE.abcCode && taskAbcCode && (
+              {taskMode === TASK_MODE.abcCode && !!taskAbcCode && (
                 <div className="EP_Educandu_PitchAnalyzer_Display-taskNotation">
                   <AbcNotation abcCode={taskAbcCode} onRender={setTaskRenderResult} />
                 </div>
               )}
-              {taskMode === TASK_MODE.image && taskImage.sourceUrl && (
+              {taskMode === TASK_MODE.image && !!taskImage.sourceUrl && (
                 <div className="EP_Educandu_PitchAnalyzer_Display-taskImage">
                   <img
                     src={getAccessibleUrl({ url: taskImage.sourceUrl, cdnRootUrl: clientConfig.cdnRootUrl })}
                     alt=""
                     />
-                  {taskImage.copyrightNotice && (
+                  {!!taskImage.copyrightNotice && (
                     <CopyrightNotice value={taskImage.copyrightNotice} />
                   )}
                 </div>
               )}
-              {hasDescriptionOrAudio && <div className="EP_Educandu_PitchAnalyzer_Display-taskDescriptionContainer">
-                {taskAudioType === TASK_AUDIO_TYPE.abcPlayer && taskMode === TASK_MODE.abcCode && (
-                  <div className="EP_Educandu_PitchAnalyzer_Display-taskAudioPlayer">
-                    <AbcPlayer renderResult={taskRenderResult} />
-                  </div>
-                )}
-                {taskAudioType === TASK_AUDIO_TYPE.urlAudio && taskAudioSourceUrl && (
-                  <div className="EP_Educandu_PitchAnalyzer_Display-taskAudioPlayer">
-                    <MediaPlayer
-                      sourceUrl={getAccessibleUrl({ url: taskAudioSourceUrl, cdnRootUrl: clientConfig.cdnRootUrl })}
-                      screenMode={MEDIA_SCREEN_MODE.none}
-                      allowDownload={isInternalSourceType({ url: taskAudioSourceUrl, cdnRootUrl: clientConfig.cdnRootUrl })}
-                      allowLoop
-                      allowPlaybackRate
-                      />
-                  </div>
-                )}
-                {taskDescription && (
-                  <div className="EP_Educandu_PitchAnalyzer_Display-taskDescription">
-                    <Markdown>{taskDescription}</Markdown>
-                  </div>
-                )}
-              </div>}
+              {!!hasDescriptionOrAudio && (
+                <div className="EP_Educandu_PitchAnalyzer_Display-taskDescriptionContainer">
+                  {taskAudioType === TASK_AUDIO_TYPE.abcPlayer && taskMode === TASK_MODE.abcCode && (
+                    <div className="EP_Educandu_PitchAnalyzer_Display-taskAudioPlayer">
+                      <AbcPlayer renderResult={taskRenderResult} />
+                    </div>
+                  )}
+                  {taskAudioType === TASK_AUDIO_TYPE.urlAudio && !!taskAudioSourceUrl && (
+                    <div className="EP_Educandu_PitchAnalyzer_Display-taskAudioPlayer">
+                      <MediaPlayer
+                        sourceUrl={getAccessibleUrl({ url: taskAudioSourceUrl, cdnRootUrl: clientConfig.cdnRootUrl })}
+                        screenMode={MEDIA_SCREEN_MODE.none}
+                        allowDownload={isInternalSourceType({ url: taskAudioSourceUrl, cdnRootUrl: clientConfig.cdnRootUrl })}
+                        allowLoop
+                        allowPlaybackRate
+                        />
+                    </div>
+                  )}
+                  {!!taskDescription && (
+                    <div className="EP_Educandu_PitchAnalyzer_Display-taskDescription">
+                      <Markdown>{taskDescription}</Markdown>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           )}
 
@@ -124,17 +126,17 @@ export default function PitchAnalyzerDisplay({ content }) {
 
           <PcSetView data={pcSetData} defaultOpen={false} />
 
-          {chordMatch && (
+          {!!chordMatch && (
             <div className="EP_Educandu_PitchAnalyzer_Display-chordMatch">
               <span className="EP_Educandu_PitchAnalyzer_Display-chordMatchLabel">
                 {t('chordMatchLabel')}:
               </span>
-              {chordLabelText && (
+              {!!chordLabelText && (
                 <span className="EP_Educandu_PitchAnalyzer_Display-chordMatchValue">
                   {chordLabelText}
                 </span>
               )}
-              {chordValueText && (
+              {!!chordValueText && (
                 <span className="EP_Educandu_PitchAnalyzer_Display-chordMatchValue EP_Educandu_PitchAnalyzer_Display-chordMatchValue--secondary">
                   {chordValueText}
                 </span>

@@ -10,7 +10,11 @@
       "Bash(npx gulp buildTestAppJs)",
       "Bash(npx gulp restartServer)",
       "Bash(node -e:*)",
-      "Bash(git mv:*)"
+      "Bash(git mv:*)",
+      "Bash(head:*)",
+      "Bash(cd /c/Users/admin/dev/pitch-analyzer-plugin && npx vitest run --reporter=verbose 2>&1)",
+      "Bash(cd /c/Users/admin/dev/pitch-analyzer-plugin && npx gulp lint 2>&1)",
+      "Bash(cd /c/Users/admin/dev/pitch-analyzer-plugin && npx gulp test 2>&1)"
     ]
   }
 }

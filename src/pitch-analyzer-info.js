@@ -81,13 +81,15 @@ class PitchAnalyzerInfo {
       url => couldAccessUrlFromRoom(url, targetRoomId) ? url : ''
     );
 
-    redactedContent.taskImage.copyrightNotice = this.gfm.redactCdnResources(
-      redactedContent.taskImage.copyrightNotice,
-      url => couldAccessUrlFromRoom(url, targetRoomId) ? url : ''
-    );
+    if (redactedContent.taskImage) {
+      redactedContent.taskImage.copyrightNotice = this.gfm.redactCdnResources(
+        redactedContent.taskImage.copyrightNotice,
+        url => couldAccessUrlFromRoom(url, targetRoomId) ? url : ''
+      );
 
-    if (!couldAccessUrlFromRoom(redactedContent.taskImage.sourceUrl, targetRoomId)) {
-      redactedContent.taskImage.sourceUrl = '';
+      if (!couldAccessUrlFromRoom(redactedContent.taskImage.sourceUrl, targetRoomId)) {
+        redactedContent.taskImage.sourceUrl = '';
+      }
     }
 
     return redactedContent;
@@ -97,10 +99,12 @@ class PitchAnalyzerInfo {
     const cdnResources = [];
 
     cdnResources.push(...this.gfm.extractCdnResources(content.taskDescription));
-    cdnResources.push(...this.gfm.extractCdnResources(content.taskImage.copyrightNotice));
+    if (content.taskImage) {
+      cdnResources.push(...this.gfm.extractCdnResources(content.taskImage.copyrightNotice));
 
-    if (isInternalSourceType({ url: content.taskImage.sourceUrl })) {
-      cdnResources.push(content.taskImage.sourceUrl);
+      if (isInternalSourceType({ url: content.taskImage.sourceUrl })) {
+        cdnResources.push(content.taskImage.sourceUrl);
+      }
     }
 
     return [...new Set(cdnResources)].filter(cdnResource => cdnResource);

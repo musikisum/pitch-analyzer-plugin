@@ -78,7 +78,8 @@ export default function PitchAnalyzerEditor({ content, onContentChanged }) {
   };
 
   const handleChordMapFile = async event => {
-    const file = event.target.files?.[0];
+    const { target } = event;
+    const file = target.files?.[0];
     if (!file) { return; }
     try {
       const text = await file.text();
@@ -89,7 +90,7 @@ export default function PitchAnalyzerEditor({ content, onContentChanged }) {
     } catch {
       message.error(t('importErrorMessage'));
     }
-    event.target.value = '';
+    target.value = '';
   };
 
   const handleChordMapClear = () => {
@@ -174,12 +175,12 @@ export default function PitchAnalyzerEditor({ content, onContentChanged }) {
             <Button icon={<UploadOutlined />} onClick={handleChordMapUploadClick}>
               {t('chordMapUploadLabel')}
             </Button>
-            {chordMap && (
+            {!!chordMap && (
               <Text type="secondary">
                 {t('chordMapEntriesCount', { count: Object.keys(chordMap).length })}
               </Text>
             )}
-            {chordMap && (
+            {!!chordMap && (
               <Button size="small" danger onClick={handleChordMapClear}>
                 {t('chordMapClearLabel')}
               </Button>

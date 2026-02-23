@@ -4,6 +4,9 @@ import pcSetTable from './pc-set-table.js';
 const NOTE_PC = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 };
 
 function abcNoteToPitchClass(note) {
+  if (!note) {
+    return null;
+  }
   let offset = 0;
   let str = note;
   if (str.startsWith('^^')) {
@@ -20,6 +23,9 @@ function abcNoteToPitchClass(note) {
     str = str.slice(1);
   } else if (str.startsWith('=')) {
     str = str.slice(1);
+  }
+  if (!str) {
+    return null;
   }
   const letter = str[0].toUpperCase();
   if (!(letter in NOTE_PC)) {
@@ -64,10 +70,13 @@ function lookupPcSet(primeForm) {
 
 // Converts ABC array to an pc set object
 export default function lookupPcsetTable(abcSet = []) {
-  if (abcSet.length === 0) {
+  if (!abcSet || abcSet.length === 0) {
     return pcSetTable[''];
   }
-  const pitchClasses = abcSet.map(abcNoteToPitchClass);  
+  const pitchClasses = abcSet.map(abcNoteToPitchClass).filter(pc => pc !== null);
+  if (pitchClasses.length === 0) {
+    return pcSetTable[''];
+  }
   const allOrders = getAllOrders(pitchClasses.sort((a, b) => a - b));
   const minInterval = Math.min(...allOrders.map(x => x[x.length - 1]));
   const compact = allOrders.filter(x => x[x.length - 1] === minInterval);
