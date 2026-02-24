@@ -120,5 +120,48 @@ describe('adapter-abc-pcset', () => {
       });
     });
 
+    describe('every piano key maps to a non-null pc set', () => {
+      // Exact note strings emitted by piano.js (WHITE_KEYS.abcCode + BLACK_KEYS sharp/flat labels)
+      const PIANO_NOTES = [
+        // white keys
+        'C', 'D', 'E', 'F', 'G', 'A', 'B',
+        // black keys – sharp side
+        '^C', '^D', '^F', '^G', '^A',
+        // black keys – flat side
+        '_D', '_E', '_G', '_A', '_B'
+      ];
+
+      it.each(PIANO_NOTES)('single key "%s" resolves to a non-null pc set entry', note => {
+        const result = lookupPcsetTable([note]);
+        expect(result).not.toBeNull();
+        expect(result).not.toBeUndefined();
+        expect(typeof result.fortePrimeForm).toBe('string');
+      });
+    });
+
+    describe('every combination of pitch classes maps to a non-null pc set', () => {
+      // One ABC representative per pitch class (0–11)
+      const PC_TO_ABC = ['C', '^C', 'D', '^D', 'E', 'F', '^F', 'G', '^G', 'A', '^A', 'B'];
+
+      it('all 4095 non-empty subsets of the 12 pitch classes resolve to a non-null entry', () => {
+        const failed = [];
+
+        for (let mask = 1; mask < 4096; mask += 1) {
+          const notes = [];
+          for (let pc = 0; pc < 12; pc += 1) {
+            if (Math.trunc(mask / (2 ** pc)) % 2 !== 0) {
+              notes.push(PC_TO_ABC[pc]);
+            }
+          }
+          const result = lookupPcsetTable(notes);
+          if (!result || typeof result.fortePrimeForm !== 'string') {
+            failed.push(notes.join(' '));
+          }
+        }
+
+        expect(failed).toEqual([]);
+      });
+    });
+
   });
 });

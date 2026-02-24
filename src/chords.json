@@ -34,9 +34,9 @@
     "de": ["Mollakkord", "Durakkord (normalisiert)"],
     "value": ["Cm", "G (gespiegelt)"]
   },
-  "0379": {
+  "0258": {
     "en": ["half-diminished 7th chord", "dominant 7th chord"],
-    "de": ["halbverminderter Septakkord", "Dominantseptakkord (nromalisiert)"],
+    "de": ["halbverminderter Septakkord", "Dominantseptakkord (normalisiert)"],
     "value": ["Am♭57", "G7 (gespiegelt)"]
   }
 }
