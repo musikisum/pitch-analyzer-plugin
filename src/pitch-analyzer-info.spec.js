@@ -1,6 +1,6 @@
-import { beforeEach, describe, expect, it } from 'vitest';
-import PitchAnalyzerInfo from './pitch-analyzer-info.js';
 import { TASK_MODE } from './constants.js';
+import PitchAnalyzerInfo from './pitch-analyzer-info.js';
+import { beforeEach, describe, expect, it } from 'vitest';
 import GithubFlavoredMarkdown from '@educandu/educandu/common/github-flavored-markdown.js';
 
 function makeDefaultContent() {

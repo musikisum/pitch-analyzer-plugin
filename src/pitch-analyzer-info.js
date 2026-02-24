@@ -1,11 +1,11 @@
 import joi from 'joi';
 import React from 'react';
-import PitchAnalyzerIcon from './pitch-analyzer-icon.js';
 import { TASK_MODE } from './constants.js';
+import PitchAnalyzerIcon from './pitch-analyzer-icon.js';
 import cloneDeep from '@educandu/educandu/utils/clone-deep.js';
 import { PLUGIN_GROUP } from '@educandu/educandu/domain/constants.js';
-import { isInternalSourceType, couldAccessUrlFromRoom } from '@educandu/educandu/utils/source-utils.js';
 import GithubFlavoredMarkdown from '@educandu/educandu/common/github-flavored-markdown.js';
+import { isInternalSourceType, couldAccessUrlFromRoom } from '@educandu/educandu/utils/source-utils.js';
 
 class PitchAnalyzerInfo {
   static dependencies = [GithubFlavoredMarkdown];

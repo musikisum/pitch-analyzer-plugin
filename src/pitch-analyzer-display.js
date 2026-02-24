@@ -2,19 +2,19 @@ import React, { useState } from 'react';
 import PcSetView from './pc-set-view.js';
 import AnalysisLog from './analysis-log.js';
 import InputSection from './input-section.js';
-import { TASK_MODE, TASK_AUDIO_TYPE } from './constants.js';
 import { useTranslation } from 'react-i18next';
 import abcPcsetAdapter from './adapter-abc-pcset.js';
+import { TASK_MODE, TASK_AUDIO_TYPE } from './constants.js';
 import Markdown from '@educandu/educandu/components/markdown.js';
 import AbcPlayer from '@educandu/educandu/components/abc-player.js';
 import AbcNotation from '@educandu/educandu/components/abc-notation.js';
 import ClientConfig from '@educandu/educandu/bootstrap/client-config.js';
+import { MEDIA_SCREEN_MODE } from '@educandu/educandu/domain/constants.js';
 import CopyrightNotice from '@educandu/educandu/components/copyright-notice.js';
 import { useService } from '@educandu/educandu/components/container-context.js';
-import { getAccessibleUrl, isInternalSourceType } from '@educandu/educandu/utils/source-utils.js';
 import { sectionDisplayProps } from '@educandu/educandu/ui/default-prop-types.js';
 import MediaPlayer from '@educandu/educandu/components/media-player/media-player.js';
-import { MEDIA_SCREEN_MODE } from '@educandu/educandu/domain/constants.js';
+import { getAccessibleUrl, isInternalSourceType } from '@educandu/educandu/utils/source-utils.js';
 
 export default function PitchAnalyzerDisplay({ content }) {
 

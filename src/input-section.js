@@ -1,8 +1,8 @@
 import Piano from './piano.js';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
-import Logger from '@educandu/educandu/common/logger.js';
 import { DeleteOutlined } from '@ant-design/icons';
+import Logger from '@educandu/educandu/common/logger.js';
 import { Input, Dropdown, Tooltip, Collapse } from 'antd';
 import { convertMusicXmlToAbc } from '@educandu/abc-tools';
 import React, { useRef, useState, useEffect } from 'react';

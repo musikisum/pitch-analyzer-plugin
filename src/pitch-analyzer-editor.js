@@ -1,17 +1,17 @@
 import React, { useRef } from 'react';
-import { Button, Form, message, Radio, Space, Typography } from 'antd';
-import { UploadOutlined } from '@ant-design/icons';
-import { TASK_MODE, TASK_AUDIO_TYPE } from './constants.js';
 import { useTranslation } from 'react-i18next';
+import { UploadOutlined } from '@ant-design/icons';
 import Info from '@educandu/educandu/components/info.js';
+import { TASK_MODE, TASK_AUDIO_TYPE } from './constants.js';
 import AbcInput from '@educandu/educandu/components/abc-input.js';
 import UrlInput from '@educandu/educandu/components/url-input.js';
+import { Button, Form, message, Radio, Space, Typography } from 'antd';
+import { ensureIsExcluded } from '@educandu/educandu/utils/array-utils.js';
 import MarkdownInput from '@educandu/educandu/components/markdown-input.js';
 import { sectionEditorProps } from '@educandu/educandu/ui/default-prop-types.js';
 import ObjectWidthSlider from '@educandu/educandu/components/object-width-slider.js';
 import CopyrightNoticeEditor from '@educandu/educandu/components/copyright-notice-editor.js';
 import { FORM_ITEM_LAYOUT, FORM_ITEM_LAYOUT_VERTICAL, SOURCE_TYPE } from '@educandu/educandu/domain/constants.js';
-import { ensureIsExcluded } from '@educandu/educandu/utils/array-utils.js';
 
 const { Text } = Typography;
 const FormItem = Form.Item;

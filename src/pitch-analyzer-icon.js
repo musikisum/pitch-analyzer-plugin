@@ -1,8 +1,5 @@
 import React from 'react';
 
-// Icon: "1,3,7" (large, full width) + three piano keys below (white – black – white).
-// White keys use fill="white" + currentColor stroke; black key uses fill="currentColor".
-
 export default function PitchAnalyzerIcon() {
   return (
     <svg

@@ -1,6 +1,6 @@
 {
-  "name": "@educandu/educandu-plugin-example",
-  "version": "0.0.0",
+  "name": "@musikisum/educandu-plugin-pitch-analyzer",
+  "version": "1.0.0",
   "description": "An example plugin for educandu",
   "type": "module",
   "exports": {
@@ -15,10 +15,10 @@
   ],
   "license": "MIT",
   "author": "Educandu Team <team@educandu.dev>",
-  "homepage": "https://github.com/educandu/educandu-plugin-example",
+  "homepage": "https://github.com/musikisum/educandu-plugin-pitch-analyzer",
   "repository": {
     "type": "git",
-    "url": "https://github.com/educandu/educandu-plugin-example"
+    "url": "https://github.com/musikisum/educandu-plugin-pitch-analyzer"
   },
   "dependencies": {},
   "devDependencies": {
