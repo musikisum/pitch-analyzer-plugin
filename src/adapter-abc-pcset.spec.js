@@ -79,6 +79,14 @@ describe('adapter-abc-pcset', () => {
         // from the table lookup (no crash), which is acceptable.
         expect(() => lookupPcsetTable(['C', 'C'])).not.toThrow();
       });
+
+      it('recognises a set starting on A with a flat (A _G E) → prime form "025"', () => {
+        // Regression: the first cyclic permutation was not normalised to 0,
+        // causing an inflated span and a wrong prime-form key that is absent from the table.
+        const result = lookupPcsetTable(['A', '_G', 'E']);
+        expect(result).not.toBeNull();
+        expect(result?.fortePrimeForm).toBe('025');
+      });
     });
 
     describe('robustness – invalid input must never crash', () => {

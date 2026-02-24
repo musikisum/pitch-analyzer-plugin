@@ -14,7 +14,9 @@
       "Bash(head:*)",
       "Bash(cd /c/Users/admin/dev/pitch-analyzer-plugin && npx vitest run --reporter=verbose 2>&1)",
       "Bash(cd /c/Users/admin/dev/pitch-analyzer-plugin && npx gulp lint 2>&1)",
-      "Bash(cd /c/Users/admin/dev/pitch-analyzer-plugin && npx gulp test 2>&1)"
+      "Bash(cd /c/Users/admin/dev/pitch-analyzer-plugin && npx gulp test 2>&1)",
+      "Bash(cd /c/Users/admin/dev/pitch-analyzer-plugin && npx vitest run src/adapter-abc-pcset.spec.js 2>&1)",
+      "Bash(cd /c/Users/admin/dev/pitch-analyzer-plugin && git pull 2>&1)"
     ]
   }
 }

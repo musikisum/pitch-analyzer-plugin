@@ -1,6 +1,6 @@
 import joi from 'joi';
 import React from 'react';
-import { SoundOutlined } from '@ant-design/icons';
+import { RadarChartOutlined } from '@ant-design/icons';
 import { TASK_MODE } from './constants.js';
 import cloneDeep from '@educandu/educandu/utils/clone-deep.js';
 import { PLUGIN_GROUP } from '@educandu/educandu/domain/constants.js';
@@ -23,7 +23,7 @@ class PitchAnalyzerInfo {
   }
 
   getIcon() {
-    return <SoundOutlined />;
+    return <RadarChartOutlined />;
   }
 
   getGroups() {

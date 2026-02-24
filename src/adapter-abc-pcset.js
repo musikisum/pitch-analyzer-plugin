@@ -42,7 +42,8 @@ function nextPermutation(orderedSet) {
 }
 
 function getAllOrders(orderedSet) {
-  const permutations = [orderedSet.slice()];
+  const first = orderedSet[0];
+  const permutations = [orderedSet.map(x => x - first)];
   for (let i = 1; i < orderedSet.length; i += 1) {
     permutations.push(nextPermutation(permutations[permutations.length - 1]));
   }

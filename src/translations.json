@@ -134,7 +134,7 @@
     },
     "taskDescription": {
       "en": "Task description",
-      "de": "Aufgabenstellung"
+      "de": "Aufgaben (Text)"
     },
     "measurePlaceholder": {
       "en": "Bars (e.g. T. 1–4)",
@@ -149,12 +149,12 @@
       "de": "Ergebnis speichern"
     },
     "downloadAnalysisLabel": {
-      "en": "Download analysis.json",
-      "de": "analyse.json herunterladen"
+      "en": "Download analysis (JSON)",
+      "de": "Analyse herunterladen (JSON)"
     },
     "importAnalysisLabel": {
-      "en": "Import analysis.json",
-      "de": "analyse.json importieren"
+      "en": "Import analysis (JSON)",
+      "de": "Analyse importieren (JSON)"
     },
     "updateResultLabel": {
       "en": "Update result",
@@ -165,8 +165,8 @@
       "de": "Akkord-Tabelle"
     },
     "chordMapUploadLabel": {
-      "en": "Upload JSON",
-      "de": "JSON hochladen"
+      "en": "Upload annotations (JSON)",
+      "de": "Anmerkungen hochladen (JSON)"
     },
     "chordMapEntriesCount": {
       "en": "{count} entries",
