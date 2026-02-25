@@ -49,7 +49,8 @@ class PitchAnalyzerInfo {
         sourceUrl: '',
         copyrightNotice: ''
       },
-      chordMap: null
+      chordMap: null,
+      parsedScore: null
     };
   }
 

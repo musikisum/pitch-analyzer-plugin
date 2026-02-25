@@ -1,16 +1,11 @@
 import Piano from './piano.js';
 import PropTypes from 'prop-types';
+import { Input, Collapse } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { DeleteOutlined } from '@ant-design/icons';
-import Logger from '@educandu/educandu/common/logger.js';
-import { Input, Dropdown, Tooltip, Collapse } from 'antd';
-import { convertMusicXmlToAbc } from '@educandu/abc-tools';
 import React, { useRef, useState, useEffect } from 'react';
-import { handleWarning } from '@educandu/educandu/ui/error-helper.js';
 
 const { TextArea } = Input;
-
-const logger = new Logger(import.meta.url);
 
 const NOTE_BASE_PC = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 };
 
@@ -86,8 +81,7 @@ function processNotes(notes) {
 const ABCREGEX = /(?:\^{1,2}|_{1,2}|=)?[A-Ga-g][,']*|[zZ]|[[\]|]/g;
 
 export default function InputSection({ abcNotes, onNotesChange }) {
-  
-  const fileInputRef = useRef(null);
+
   const lastNotesFromTypingRef = useRef(null);
   const { t } = useTranslation('educandu/pitch-analyzer');
   const [inputText, setInputText] = useState(() => abcNotes.join(' '));
@@ -99,44 +93,6 @@ export default function InputSection({ abcNotes, onNotesChange }) {
       setInputText(abcNotes.join(' '));
     }
   }, [abcNotes]);
-
-  const importMusicXml = () => {
-    fileInputRef.current?.click();
-  };
-
-  const handleFileSelect = async event => {
-    const { target } = event;
-    const file = target.files?.[0];
-    if (!file) {
-      return;
-    }
-
-    try {
-      const xmlString = await new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = e => resolve(e.target.result);
-        reader.onerror = e => reject(e.target.error);
-        reader.readAsText(file);
-      });
-
-      const { result, warningMessage } = convertMusicXmlToAbc(xmlString);
-      const notes = processNotes(result.match(ABCREGEX) || []);
-      onNotesChange(notes);
-      if (warningMessage) {
-        handleWarning({ message: warningMessage, logger, t });
-      }
-    } catch (error) {
-      handleWarning({ message: error.message, logger, t });
-    }
-
-    target.value = '';
-  };
-
-  const handleToolsItemClick = ({ key }) => {
-    if (key === 'import-music-xml') {
-      importMusicXml();
-    }
-  };
 
   const handleDeleteAll = () => {
     onNotesChange([]);
@@ -168,13 +124,6 @@ export default function InputSection({ abcNotes, onNotesChange }) {
     }
   };
 
-  const toolsItems = [
-    {
-      key: 'import-music-xml',
-      label: t('importMusicXmlLabel')
-    }
-  ];
-
   return (
     <div className="EP_Educandu_PitchAnalyzer_Display-inputSection">
       <Collapse
@@ -192,20 +141,6 @@ export default function InputSection({ abcNotes, onNotesChange }) {
                   onChange={handleAbcCodeChange}
                   placeholder={t('abcPlaceholder')}
                   />
-                <div className="EP_Educandu_PitchAnalyzer_Display-toolsContainer">
-                  <Dropdown
-                    placement="topLeft"
-                    trigger={['click']}
-                    arrow={{ pointAtCenter: true }}
-                    menu={{ items: toolsItems, onClick: handleToolsItemClick }}
-                    >
-                    <Tooltip title={t('toolsButtonTooltip')} placement="left">
-                      <div className="EP_Educandu_PitchAnalyzer_Display-toolsButton">
-                        {t('tools')}
-                      </div>
-                    </Tooltip>
-                  </Dropdown>
-                </div>
               </div>
             )
           }
@@ -260,13 +195,6 @@ export default function InputSection({ abcNotes, onNotesChange }) {
           </button>
         </div>
       </div>
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept=".xml,.musicxml"
-        style={{ display: 'none' }}
-        onChange={handleFileSelect}
-        />
     </div>
   );
 }

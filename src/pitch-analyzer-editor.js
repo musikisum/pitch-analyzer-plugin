@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { UploadOutlined } from '@ant-design/icons';
 import Info from '@educandu/educandu/components/info.js';
 import { TASK_MODE, TASK_AUDIO_TYPE } from './constants.js';
+import { parseMusicXmlAbcScore } from './musicxml-score-parser.js';
 import AbcInput from '@educandu/educandu/components/abc-input.js';
 import UrlInput from '@educandu/educandu/components/url-input.js';
 import { Button, Form, message, Radio, Space, Typography } from 'antd';
@@ -46,7 +47,21 @@ export default function PitchAnalyzerEditor({ content, onContentChanged }) {
   };
 
   const handleTaskAbcCodeChange = event => {
-    updateContent({ taskAbcCode: event.target.value });
+    const newAbcCode = event.target.value;
+    if (newAbcCode.includes('I:linebreak')) {
+      const cleanedAbcCode = newAbcCode
+        .split('\n')
+        .filter(line => !line.trimStart().startsWith('%%'))
+        .join('\n')
+        .replace(/\[[A-Z]:[^\]]*\]/g, '')
+        .replace(/"[^"]*"/g, '')
+        .replace(/![^!]*!/g, '')
+        .replace(/\+[^+]*\+/g, '')
+        .replace(/\{[^}]*\}/g, '');
+      updateContent({ taskAbcCode: cleanedAbcCode, parsedScore: parseMusicXmlAbcScore(cleanedAbcCode) });
+    } else {
+      updateContent({ taskAbcCode: newAbcCode });
+    }
   };
 
   const handleTaskImageSourceUrlChange = value => {

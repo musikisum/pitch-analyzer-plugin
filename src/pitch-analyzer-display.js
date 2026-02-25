@@ -4,6 +4,7 @@ import AnalysisLog from './analysis-log.js';
 import InputSection from './input-section.js';
 import { useTranslation } from 'react-i18next';
 import abcPcsetAdapter from './adapter-abc-pcset.js';
+import MusicXmlAnalyzer from './musicxml-analyzer.js';
 import { TASK_MODE, TASK_AUDIO_TYPE } from './constants.js';
 import Markdown from '@educandu/educandu/components/markdown.js';
 import AbcPlayer from '@educandu/educandu/components/abc-player.js';
@@ -34,6 +35,7 @@ export default function PitchAnalyzerDisplay({ content }) {
     taskAudioType = TASK_AUDIO_TYPE.none,
     taskAudioSourceUrl = '',
     chordMap = null,
+    parsedScore = null,
     width
   } = content;
 
@@ -119,6 +121,10 @@ export default function PitchAnalyzerDisplay({ content }) {
           </div>
 
           <InputSection abcNotes={abcNotes} onNotesChange={setAbcNotes} />
+
+          {!!parsedScore && (
+            <MusicXmlAnalyzer parsedScore={parsedScore} onNotesChange={setAbcNotes} />
+          )}
 
           <div className="AbcNotation-player">
             <AbcPlayer renderResult={lastRenderResult} />

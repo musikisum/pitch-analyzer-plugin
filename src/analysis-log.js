@@ -2,8 +2,8 @@ import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import React, { useRef, useState } from 'react';
 import { Button, Input, message, Space, Typography } from 'antd';
-import { DeleteOutlined, DownloadOutlined, HolderOutlined, RedoOutlined, SaveOutlined, UploadOutlined } from '@ant-design/icons';
 import DragAndDropContainer from '@educandu/educandu/components/drag-and-drop-container.js';
+import { DeleteOutlined, DownloadOutlined, HolderOutlined, RedoOutlined, SaveOutlined, UploadOutlined } from '@ant-design/icons';
 
 const { Text } = Typography;
 

@@ -199,6 +199,34 @@
     "taskAudioSourceUrl": {
       "en": "Audio URL",
       "de": "Audio-URL"
+    },
+    "musicXmlAnalyzerVoicesLabel": {
+      "en": "Voices:",
+      "de": "Stimmen:"
+    },
+    "musicXmlAnalyzerFromLabel": {
+      "en": "From:",
+      "de": "Von:"
+    },
+    "musicXmlAnalyzerToLabel": {
+      "en": "To:",
+      "de": "Bis:"
+    },
+    "musicXmlAnalyzerMeasureLabel": {
+      "en": "Measure",
+      "de": "Takt"
+    },
+    "musicXmlAnalyzerBeatLabel": {
+      "en": "Beat",
+      "de": "Zählzeit"
+    },
+    "musicXmlScoreLabel": {
+      "en": "Score (MusicXML)",
+      "de": "Partitur (MusicXML)"
+    },
+    "musicXmlScoreInfo": {
+      "en": "{measureCount} measures, {voiceCount} voices",
+      "de": "{measureCount} Takte, {voiceCount} Stimmen"
     }
   }
 }
