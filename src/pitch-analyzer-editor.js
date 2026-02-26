@@ -39,7 +39,12 @@ export default function PitchAnalyzerEditor({ content, onContentChanged }) {
   };
 
   const handleTaskModeChange = event => {
-    updateContent({ taskMode: event.target.value });
+    const newTaskMode = event.target.value;
+    if (newTaskMode !== TASK_MODE.abcCode) {
+      updateContent({ taskMode: newTaskMode, parsedScore: null });
+    } else {
+      updateContent({ taskMode: newTaskMode });
+    }
   };
 
   const handleTaskWidthChange = value => {
@@ -60,7 +65,7 @@ export default function PitchAnalyzerEditor({ content, onContentChanged }) {
         .replace(/\{[^}]*\}/g, '');
       updateContent({ taskAbcCode: cleanedAbcCode, parsedScore: parseMusicXmlAbcScore(cleanedAbcCode) });
     } else {
-      updateContent({ taskAbcCode: newAbcCode });
+      updateContent({ taskAbcCode: newAbcCode, parsedScore: null });
     }
   };
 
