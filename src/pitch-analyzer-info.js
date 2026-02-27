@@ -1,5 +1,6 @@
 import joi from 'joi';
 import React from 'react';
+import version from './version.js';
 import { TASK_MODE } from './constants.js';
 import PitchAnalyzerIcon from './pitch-analyzer-icon.js';
 import cloneDeep from '@educandu/educandu/utils/clone-deep.js';
@@ -27,7 +28,7 @@ class PitchAnalyzerInfo {
   }
 
   getGroups() {
-    return [PLUGIN_GROUP.mostUsed, PLUGIN_GROUP.other];
+    return [PLUGIN_GROUP.other];
   }
 
   async resolveDisplayComponent() {
@@ -40,6 +41,7 @@ class PitchAnalyzerInfo {
 
   getDefaultContent() {
     return {
+      version: version.toString(),
       width: 100,
       taskMode: TASK_MODE.none,
       taskWidth: 100,
