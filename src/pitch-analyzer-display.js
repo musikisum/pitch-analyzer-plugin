@@ -12,6 +12,7 @@ import AbcNotation from '@educandu/educandu/components/abc-notation.js';
 import ClientConfig from '@educandu/educandu/bootstrap/client-config.js';
 import { MEDIA_SCREEN_MODE } from '@educandu/educandu/domain/constants.js';
 import CopyrightNotice from '@educandu/educandu/components/copyright-notice.js';
+import { upgradeContent } from './content-updater.js';
 import { useService } from '@educandu/educandu/components/container-context.js';
 import { sectionDisplayProps } from '@educandu/educandu/ui/default-prop-types.js';
 import MediaPlayer from '@educandu/educandu/components/media-player/media-player.js';
@@ -21,6 +22,7 @@ export default function PitchAnalyzerDisplay({ content }) {
 
   const { t, i18n } = useTranslation('educandu/pitch-analyzer');
   const clientConfig = useService(ClientConfig);
+  const upgradedContent = upgradeContent(content);
   const [abcNotes, setAbcNotes] = useState([]);
   const [lastRenderResult, setLastRenderResult] = useState(null);
   const [taskRenderResult, setTaskRenderResult] = useState(null);
@@ -37,7 +39,7 @@ export default function PitchAnalyzerDisplay({ content }) {
     chordMap = null,
     parsedScore = null,
     width
-  } = content;
+  } = upgradedContent;
 
   const getFullAbcCode = () => {
     if (abcNotes.length === 0) {

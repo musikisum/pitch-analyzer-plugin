@@ -1,7 +1,8 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { UploadOutlined } from '@ant-design/icons';
 import Info from '@educandu/educandu/components/info.js';
+import { upgradeContent } from './content-updater.js';
 import { TASK_MODE, TASK_AUDIO_TYPE } from './constants.js';
 import { parseMusicXmlAbcScore } from './musicxml-score-parser.js';
 import AbcInput from '@educandu/educandu/components/abc-input.js';
@@ -34,6 +35,13 @@ export default function PitchAnalyzerEditor({ content, onContentChanged }) {
     width
   } = content;
 
+  useEffect(() => {
+    const migrated = upgradeContent(content);
+    if (migrated !== content) {
+      onContentChanged(migrated);
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   const updateContent = newContentValues => {
     onContentChanged({ ...content, ...newContentValues });
   };
@@ -53,7 +61,8 @@ export default function PitchAnalyzerEditor({ content, onContentChanged }) {
 
   const handleTaskAbcCodeChange = event => {
     const newAbcCode = event.target.value;
-    if (newAbcCode.includes('I:linebreak')) {
+    const isNewImport = newAbcCode.includes('I:linebreak') && !taskAbcCode.includes('I:linebreak');
+    if (isNewImport) {
       const cleanedAbcCode = newAbcCode
         .split('\n')
         .filter(line => !line.trimStart().startsWith('%%'))

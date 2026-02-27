@@ -213,81 +213,41 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 16px;
+    gap: 12px;
     margin-top: 16px;
     overflow-x: auto;
   }
 
-  &-deleteButton {
+  &-resetButton {
     width: 50px;
-    height: 120px;
+    height: 80px;
+    flex-shrink: 0;
     border: 1px solid #d9d9d9;
     border-radius: 4px;
-    overflow: hidden;
-    transform: rotate(180deg);
+    background: #fff;
+    cursor: pointer;
     display: flex;
-    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    color: rgba(0, 0, 0, 0.45);
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
 
-    // Shared styles for both halves
-    &-single,
-    &-all {
-      flex: 1;
-      width: 100%;
-      border: none;
-      background: #fff;
-      cursor: pointer;
-      font-size: 24px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: background 0.2s, color 0.2s;
-
-      &:disabled {
-        opacity: 0.4;
-        cursor: not-allowed;
-      }
+    &:hover:not(:disabled) {
+      background: #f44336;
+      border-color: #f44336;
+      color: #fff;
     }
 
-    // Upper half (visually): delete one note — light red hover
-    &-single {
-      border-bottom: 1px solid #f0f0f0;
-
-      &:hover:not(:disabled) {
-        background: #ffebee;
-      }
-
-      &:active:not(:disabled) {
-        background: #ffcdd2;
-      }
+    &:active:not(:disabled) {
+      background: #b71c1c;
+      border-color: #b71c1c;
+      color: #fff;
     }
 
-    // Lower half (visually): delete all notes — strong red hover
-    &-all {
-      color: rgba(0, 0, 0, 0.45);
-
-      &:hover:not(:disabled) {
-        background: #f44336;
-        color: #fff;
-      }
-
-      &:active:not(:disabled) {
-        background: #b71c1c;
-        color: #fff;
-      }
-    }
-
-    &-allContent {
-      transform: rotate(180deg);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 3px;
-    }
-
-    &-allNotes {
-      font-size: 14px;
-      line-height: 1;
-      letter-spacing: 1px;
+    &:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
     }
   }
 }
@@ -312,7 +272,12 @@
     align-items: flex-end;
     justify-content: center;
     padding-bottom: 8px;
-    transition: background 0.1s;
+    transition: background 0.1s, border-color 0.1s;
+
+    &[data-active] {
+      background: linear-gradient(to bottom, #fff 0%, #f5f5f5 100%);
+      border-color: #ccc;
+    }
 
     &:hover {
       background: linear-gradient(to bottom, #e8f5e9 0%, #c8e6c9 100%);
@@ -320,6 +285,15 @@
 
     &:active {
       background: linear-gradient(to bottom, #c8e6c9 0%, #a5d6a7 100%);
+    }
+
+    &[data-active]:hover {
+      background: linear-gradient(to bottom, #ffcdd2 0%, #ef9a9a 100%);
+      border-color: #ef9a9a;
+    }
+
+    &[data-active]:active {
+      background: linear-gradient(to bottom, #ef9a9a 0%, #e57373 100%);
     }
   }
 
@@ -375,6 +349,18 @@
     &:active {
       background: linear-gradient(to bottom, #388e3c 0%, #2e7d32 100%);
     }
+
+    &[data-active] {
+      background: linear-gradient(to bottom, #333 0%, #000 100%);
+    }
+
+    &[data-active]:hover {
+      background: linear-gradient(to bottom, #c62828 0%, #b71c1c 100%);
+    }
+
+    &[data-active]:active {
+      background: linear-gradient(to bottom, #b71c1c 0%, #7f0000 100%);
+    }
   }
 
   &-blackKeyRight {
@@ -387,6 +373,18 @@
 
     &:active {
       background: linear-gradient(to bottom, #388e3c 0%, #2e7d32 100%);
+    }
+
+    &[data-active] {
+      background: linear-gradient(to bottom, #222 0%, #000 100%);
+    }
+
+    &[data-active]:hover {
+      background: linear-gradient(to bottom, #c62828 0%, #b71c1c 100%);
+    }
+
+    &[data-active]:active {
+      background: linear-gradient(to bottom, #b71c1c 0%, #7f0000 100%);
     }
   }
 
