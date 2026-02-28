@@ -51,16 +51,81 @@ function defaultTupletQ(p) {
   return 2;
 }
 
+// Builds a map from uppercase pitch letter to accidental prefix ('^' or '_')
+// for the given ABC key string (e.g. 'F', 'Bb', 'C#m', 'Gmix').
+// Sharp order: F C G D A E B  (circle of fifths)
+// Flat order:  B E A D G C F
+const SHARP_ORDER = ['F', 'C', 'G', 'D', 'A', 'E', 'B'];
+const FLAT_ORDER = ['B', 'E', 'A', 'D', 'G', 'C', 'F'];
+// Number of sharps for each tonic letter in its major key
+const MAJOR_SHARPS = { C: 0, D: 2, E: 4, F: -1, G: 1, A: 3, B: 5 };
+
+function parseKeyAccidentals(keyStr) {
+  if (!keyStr) {
+    return {};
+  }
+  const trimmed = keyStr.trim();
+  if (!trimmed || trimmed.toLowerCase() === 'none') {
+    return {};
+  }
+  const m = trimmed.match(/^([A-G])(b|#)?(.*)/i);
+  if (!m) {
+    return {};
+  }
+  const tonic = m[1].toUpperCase();
+  const tonicAcc = m[2] || '';
+  const modeStr = (m[3] || '').toLowerCase().trim();
+
+  // Start from the major key sharps count, then adjust for chromatic alteration and mode
+  let sharps = tonic in MAJOR_SHARPS ? MAJOR_SHARPS[tonic] : 0;
+  if (tonicAcc === '#') {
+    sharps += 7;
+  }
+  if (tonicAcc === 'b') {
+    sharps -= 7;
+  }
+  // Mode adjustments relative to major (ionian = 0)
+  if (modeStr === 'm' || modeStr.startsWith('min') || modeStr.startsWith('aeo')) {
+    sharps -= 3;
+  } else if (modeStr.startsWith('dor')) {
+    sharps -= 2;
+  } else if (modeStr.startsWith('phr')) {
+    sharps -= 4;
+  } else if (modeStr.startsWith('lyd')) {
+    sharps += 1;
+  } else if (modeStr.startsWith('mix')) {
+    sharps -= 1;
+  } else if (modeStr.startsWith('loc')) {
+    sharps -= 5;
+  }
+
+  const acc = {};
+  if (sharps > 0) {
+    SHARP_ORDER.slice(0, Math.min(sharps, 7)).forEach(letter => {
+      acc[letter] = '^';
+    });
+  } else if (sharps < 0) {
+    FLAT_ORDER.slice(0, Math.min(-sharps, 7)).forEach(letter => {
+      acc[letter] = '_';
+    });
+  }
+  return acc;
+}
+
 // Parses one measure's ABC string into an array of { token, beatStart }.
-// token: acc+letter (e.g. '_B', '=F', 'C') — no octave modifiers
+// token: acc+letter (e.g. '_B', '=F', 'C') — no octave modifiers, key sig applied
 // beatStart: 0-indexed position in mDen-units (beat 1 = beatStart 0)
 // beatFactor = lNum * mDen / lDen  (mDen-units per L-unit)
-function parseMeasureStr(str, lNum, lDen, mDen) {
+// keyAcc: map from uppercase letter to accidental prefix (from parseKeyAccidentals)
+function parseMeasureStr(str, lNum, lDen, mDen, keyAcc) {
   const beatFactor = (lNum * mDen) / lDen;
   const result = [];
   let beat = 0;
   let tupletMult = 1;
   let tupletLeft = 0;
+  // Tracks accidentals set within this measure (reset at each bar line).
+  // Key: uppercase letter, value: resolved accidental string ('' | '^' | '_' | '^^' | '__')
+  const measureAcc = {};
 
   // Strip all inline headers [X:...] (M: changes already extracted by caller)
   let s = str.replace(/\[[A-Z]:[^\]]*\]/g, ' ');
@@ -97,7 +162,19 @@ function parseMeasureStr(str, lNum, lDen, mDen) {
         const noteRe = /([_^=]*)([A-Ga-g])[,']*/g;
         let nm = noteRe.exec(cm[1]);
         while (nm !== null) {
-          result.push({ token: nm[1] + nm[2], beatStart: beat });
+          const prefix = nm[1];
+          const letter = nm[2];
+          const L = letter.toUpperCase();
+          let resolvedAcc;
+          if (prefix) {
+            resolvedAcc = prefix === '=' ? '' : prefix;
+            measureAcc[L] = resolvedAcc;
+          } else if (L in measureAcc) {
+            resolvedAcc = measureAcc[L];
+          } else {
+            resolvedAcc = keyAcc[L] || '';
+          }
+          result.push({ token: resolvedAcc + letter, beatStart: beat });
           nm = noteRe.exec(cm[1]);
         }
         beat += dur;
@@ -134,8 +211,22 @@ function parseMeasureStr(str, lNum, lDen, mDen) {
         const [dm, dd] = parseDurationSuffix(nm[4]);
         const eff = tupletLeft > 0 ? tupletMult : 1;
         const dur = (dm / dd) * beatFactor * eff;
-        // Token: acc + letter only (octave irrelevant for pitch-class analysis)
-        result.push({ token: nm[1] + nm[2], beatStart: beat });
+        const prefix = nm[1];
+        const letter = nm[2];
+        const L = letter.toUpperCase();
+        let resolvedAcc;
+        if (prefix) {
+          // Explicit accidental: natural (=) resolves to '', sharps/flats kept as-is
+          resolvedAcc = prefix === '=' ? '' : prefix;
+          measureAcc[L] = resolvedAcc;
+        } else if (L in measureAcc) {
+          // Carry forward measure-level accidental from earlier in this bar
+          resolvedAcc = measureAcc[L];
+        } else {
+          // No explicit or carried accidental — apply key signature
+          resolvedAcc = keyAcc[L] || '';
+        }
+        result.push({ token: resolvedAcc + letter, beatStart: beat });
         beat += dur;
         if (tupletLeft > 0) {
           tupletLeft -= 1;
@@ -155,7 +246,7 @@ function parseMeasureStr(str, lNum, lDen, mDen) {
 
 // Parses one voice's full content (joined lines) into measures.
 // Returns { measures: Array<Array<{token,beatStart}>>, measureMeta: Array<{mNum,mDen}> }
-function parseVoiceContent(content, lNum, lDen, initMNum, initMDen) {
+function parseVoiceContent(content, lNum, lDen, initMNum, initMDen, keyAcc) {
   let curMNum = initMNum;
   let curMDen = initMDen;
   const measures = [];
@@ -175,7 +266,7 @@ function parseVoiceContent(content, lNum, lDen, initMNum, initMDen) {
       }
 
       measureMeta.push({ mNum: curMNum, mDen: curMDen });
-      measures.push(parseMeasureStr(seg, lNum, lDen, curMDen));
+      measures.push(parseMeasureStr(seg, lNum, lDen, curMDen, keyAcc));
     }
   }
 
@@ -191,6 +282,7 @@ function parseVoiceContent(content, lNum, lDen, initMNum, initMDen) {
 //   voiceMeasures: { [voiceId]: Array<Array<{ token: string, beatStart: number }>> }
 //
 // beatStart is 0-indexed in mDen-units:  beat 1 in the UI = beatStart 0
+// Tokens have key-signature accidentals already applied (e.g. 'B' in K:F → '_B').
 export function parseMusicXmlAbcScore(abcString) {
   const lines = abcString.split('\n');
 
@@ -199,6 +291,7 @@ export function parseMusicXmlAbcScore(abcString) {
   let lDen = 8;
   let mNum = 4;
   let mDen = 4;
+  let keyStr = 'C';
   const voiceDecls = []; // [{ id, label }]
 
   let headerDone = false;
@@ -217,6 +310,7 @@ export function parseMusicXmlAbcScore(abcString) {
           mNum = parseInt(mMatch[1], 10);
           mDen = parseInt(mMatch[2], 10);
         } else if (/^K:/.test(line)) {
+          keyStr = line.slice(2).trim();
           // K: is the last standard header field — everything after goes to body
           headerDone = true;
         }
@@ -240,6 +334,8 @@ export function parseMusicXmlAbcScore(abcString) {
       }
     }
   }
+
+  const keyAcc = parseKeyAccidentals(keyStr);
 
   // Collect voice section content.
   // xml2abc format: after K:, voice declarations appear as "V:N nm=..." then
@@ -305,7 +401,7 @@ export function parseMusicXmlAbcScore(abcString) {
 
   for (const voice of voiceDecls) {
     const content = (voiceSectionLines[voice.id] || []).join(' ');
-    const { measures, measureMeta } = parseVoiceContent(content, lNum, lDen, mNum, mDen);
+    const { measures, measureMeta } = parseVoiceContent(content, lNum, lDen, mNum, mDen, keyAcc);
     voiceMeasures[voice.id] = measures;
     voiceMeta[voice.id] = measureMeta;
   }

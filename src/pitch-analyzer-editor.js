@@ -74,7 +74,7 @@ export default function PitchAnalyzerEditor({ content, onContentChanged }) {
         .replace(/\{[^}]*\}/g, '');
       updateContent({ taskAbcCode: cleanedAbcCode, parsedScore: parseMusicXmlAbcScore(cleanedAbcCode) });
     } else {
-      updateContent({ taskAbcCode: newAbcCode, parsedScore: null });
+      updateContent({ taskAbcCode: newAbcCode, parsedScore: newAbcCode ? parseMusicXmlAbcScore(newAbcCode) : null });
     }
   };
 
