@@ -28,7 +28,7 @@ class PitchAnalyzerInfo {
   }
 
   getGroups() {
-    return [PLUGIN_GROUP.other];
+    return [PLUGIN_GROUP.other, PLUGIN_GROUP.userInput];
   }
 
   async resolveDisplayComponent() {
