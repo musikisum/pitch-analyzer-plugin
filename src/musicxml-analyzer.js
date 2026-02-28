@@ -43,7 +43,7 @@ function deduplicateByPitchClass(tokens) {
 }
 
 export default function MusicXmlAnalyzer({ parsedScore, onNotesChange }) {
-  const { t } = useTranslation('educandu/pitch-analyzer');
+  const { t } = useTranslation('musikisum/educandu-plugin-pitch-analyzer');
 
   const [selectedVoices, setSelectedVoices] = useState(
     () => new Set(parsedScore.voices.map(v => v.id))

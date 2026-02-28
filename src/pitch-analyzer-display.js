@@ -20,7 +20,7 @@ import { getAccessibleUrl, isInternalSourceType } from '@educandu/educandu/utils
 
 export default function PitchAnalyzerDisplay({ content }) {
 
-  const { t, i18n } = useTranslation('educandu/pitch-analyzer');
+  const { t, i18n } = useTranslation('musikisum/educandu-plugin-pitch-analyzer');
   const clientConfig = useService(ClientConfig);
   const upgradedContent = upgradeContent(content);
   const [abcNotes, setAbcNotes] = useState([]);

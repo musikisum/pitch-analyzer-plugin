@@ -83,7 +83,7 @@ const ABCREGEX = /(?:\^{1,2}|_{1,2}|=)?[A-Ga-g][,']*|[zZ]|[[\]|]/g;
 export default function InputSection({ abcNotes, onNotesChange }) {
 
   const lastNotesFromTypingRef = useRef(null);
-  const { t } = useTranslation('educandu/pitch-analyzer');
+  const { t } = useTranslation('musikisum/educandu-plugin-pitch-analyzer');
   const [inputText, setInputText] = useState(() => abcNotes.join(' '));
 
   useEffect(() => {

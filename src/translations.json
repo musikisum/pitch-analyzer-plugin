@@ -1,5 +1,5 @@
 {
-  "educandu/pitch-analyzer": {
+  "musikisum/educandu-plugin-pitch-analyzer": {
     "name": {
       "en": "Pitch Analyzer",
       "de": "Tonhöhen-Analyse"

@@ -11,7 +11,7 @@ import { isInternalSourceType, couldAccessUrlFromRoom } from '@educandu/educandu
 class PitchAnalyzerInfo {
   static dependencies = [GithubFlavoredMarkdown];
 
-  static typeName = 'educandu/pitch-analyzer';
+  static typeName = 'musikisum/educandu-plugin-pitch-analyzer';
 
   allowsInput = true;
 
@@ -20,7 +20,7 @@ class PitchAnalyzerInfo {
   }
 
   getDisplayName(t) {
-    return t('educandu/pitch-analyzer:name');
+    return t('musikisum/educandu-plugin-pitch-analyzer:name');
   }
 
   getIcon() {

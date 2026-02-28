@@ -1,6 +1,6 @@
 {
   "name": "@musikisum/educandu-plugin-pitch-analyzer",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "A plugin for analyzing pitches in music",
   "type": "module",
   "exports": {

@@ -103,7 +103,7 @@ AnalysisLogItem.propTypes = {
 };
 
 export default function AnalysisLog({ pcSetData, abcNotes, onSelect, chordLabel, chordValue }) {
-  const { t } = useTranslation('educandu/pitch-analyzer');
+  const { t } = useTranslation('musikisum/educandu-plugin-pitch-analyzer');
   const importFileRef = useRef(null);
   const [measure, setMeasure] = useState('');
   const [comment, setComment] = useState('');

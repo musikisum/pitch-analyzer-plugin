@@ -31,7 +31,7 @@ ChipTag.propTypes = {
 };
 
 function SetItems({ filtered, mode }) {
-  const { t } = useTranslation('educandu/pitch-analyzer');
+  const { t } = useTranslation('musikisum/educandu-plugin-pitch-analyzer');
   if (!filtered.length) {
     return <Text type="secondary">{t('noResults')}</Text>;
   }
@@ -79,7 +79,7 @@ SetCard.propTypes = {
 };
 
 function PcSetDetailsPanel({ data, superSets, subSets }) {
-  const { t } = useTranslation('educandu/pitch-analyzer');
+  const { t } = useTranslation('musikisum/educandu-plugin-pitch-analyzer');
   const [filter, setFilter] = useState('');
   const [mode, setMode] = useState('chips');
 
@@ -159,7 +159,7 @@ function buildSummaryTitle(title, data, t) {
 }
 
 export default function PcSetView({ data, defaultOpen, title }) {
-  const { t } = useTranslation('educandu/pitch-analyzer');
+  const { t } = useTranslation('musikisum/educandu-plugin-pitch-analyzer');
   const [activeKey, setActiveKey] = useState(defaultOpen ? ['details'] : []);
 
   const superSets = Array.isArray(data?.superSets) ? data.superSets : [];

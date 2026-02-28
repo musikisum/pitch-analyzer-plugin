@@ -21,7 +21,7 @@ const RadioGroup = Radio.Group;
 const RadioButton = Radio.Button;
 
 export default function PitchAnalyzerEditor({ content, onContentChanged }) {
-  const { t } = useTranslation('educandu/pitch-analyzer');
+  const { t } = useTranslation('musikisum/educandu-plugin-pitch-analyzer');
   const chordMapFileRef = useRef(null);
   const {
     taskMode = TASK_MODE.none,
