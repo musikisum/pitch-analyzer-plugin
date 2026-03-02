@@ -13,7 +13,7 @@ class PitchAnalyzerInfo {
 
   static typeName = 'musikisum/educandu-plugin-pitch-analyzer';
 
-  allowsInput = true;
+  allowsInput = false;
 
   constructor(gfm) {
     this.gfm = gfm;
@@ -82,6 +82,10 @@ class PitchAnalyzerInfo {
       }
     }
 
+    if (!couldAccessUrlFromRoom(redactedContent.taskAudioSourceUrl, targetRoomId)) {
+      redactedContent.taskAudioSourceUrl = '';
+    }
+
     return redactedContent;
   }
 
@@ -95,6 +99,10 @@ class PitchAnalyzerInfo {
       if (isInternalSourceType({ url: content.taskImage.sourceUrl })) {
         cdnResources.push(content.taskImage.sourceUrl);
       }
+    }
+
+    if (isInternalSourceType({ url: content.taskAudioSourceUrl })) {
+      cdnResources.push(content.taskAudioSourceUrl);
     }
 
     return [...new Set(cdnResources)].filter(cdnResource => cdnResource);

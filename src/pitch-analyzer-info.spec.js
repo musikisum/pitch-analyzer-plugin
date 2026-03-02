@@ -199,6 +199,18 @@ describe('pitch-analyzer-info', () => {
       const content = { ...makeDefaultContent(), taskImage: null };
       expect(() => sut.redactContent(content, 'any-room-id')).not.toThrow();
     });
+
+    it('clears taskAudioSourceUrl when it is not accessible from the target room', () => {
+      const content = { ...makeDefaultContent(), taskAudioSourceUrl: 'cdn://room-media/63cHjt3BAhGnNxzJGrTsN1/audio.mp3' };
+      const result = sut.redactContent(content, 'rebhjf4MLq7yjeoCnYfn7E');
+      expect(result.taskAudioSourceUrl).toBe('');
+    });
+
+    it('preserves taskAudioSourceUrl when it is accessible from the target room', () => {
+      const content = { ...makeDefaultContent(), taskAudioSourceUrl: 'cdn://room-media/63cHjt3BAhGnNxzJGrTsN1/audio.mp3' };
+      const result = sut.redactContent(content, '63cHjt3BAhGnNxzJGrTsN1');
+      expect(result.taskAudioSourceUrl).toBe('cdn://room-media/63cHjt3BAhGnNxzJGrTsN1/audio.mp3');
+    });
   });
 
   // ---------------------------------------------------------------------------
@@ -272,6 +284,16 @@ describe('pitch-analyzer-info', () => {
     it('does not crash when taskImage is null', () => {
       const content = { ...makeDefaultContent(), taskImage: null };
       expect(() => sut.getCdnResources(content)).not.toThrow();
+    });
+
+    it('includes taskAudioSourceUrl when it is an internal CDN resource', () => {
+      const content = { ...makeDefaultContent(), taskAudioSourceUrl: 'cdn://media-library/JgTaqob5vqosBiHsZZoh1/audio.mp3' };
+      expect(sut.getCdnResources(content)).toContain('cdn://media-library/JgTaqob5vqosBiHsZZoh1/audio.mp3');
+    });
+
+    it('does not include external https:// URLs from taskAudioSourceUrl', () => {
+      const content = { ...makeDefaultContent(), taskAudioSourceUrl: 'https://external.example.com/audio.mp3' };
+      expect(sut.getCdnResources(content)).not.toContain('https://external.example.com/audio.mp3');
     });
   });
 
