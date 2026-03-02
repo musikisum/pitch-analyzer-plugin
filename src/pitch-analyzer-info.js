@@ -13,8 +13,6 @@ class PitchAnalyzerInfo {
 
   static typeName = 'musikisum/educandu-plugin-pitch-analyzer';
 
-  allowsInput = false;
-
   constructor(gfm) {
     this.gfm = gfm;
   }
@@ -28,7 +26,7 @@ class PitchAnalyzerInfo {
   }
 
   getGroups() {
-    return [PLUGIN_GROUP.other, PLUGIN_GROUP.userInput];
+    return [PLUGIN_GROUP.interactive];
   }
 
   async resolveDisplayComponent() {
