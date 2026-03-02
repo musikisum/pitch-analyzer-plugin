@@ -1,7 +1,7 @@
 const version = {
   MAJOR: 1,
   MINOR: 1,
-  PATCH: 6,
+  PATCH: 8,
   toString() {
     return `${this.MAJOR}.${this.MINOR}.${this.PATCH}`;
   }

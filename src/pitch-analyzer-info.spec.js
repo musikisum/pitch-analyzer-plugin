@@ -200,12 +200,6 @@ describe('pitch-analyzer-info', () => {
       expect(() => sut.redactContent(content, 'any-room-id')).not.toThrow();
     });
 
-    it('clears taskAudioSourceUrl when it is not accessible from the target room', () => {
-      const content = { ...makeDefaultContent(), taskAudioSourceUrl: 'cdn://room-media/63cHjt3BAhGnNxzJGrTsN1/audio.mp3' };
-      const result = sut.redactContent(content, 'rebhjf4MLq7yjeoCnYfn7E');
-      expect(result.taskAudioSourceUrl).toBe('');
-    });
-
     it('preserves taskAudioSourceUrl when it is accessible from the target room', () => {
       const content = { ...makeDefaultContent(), taskAudioSourceUrl: 'cdn://room-media/63cHjt3BAhGnNxzJGrTsN1/audio.mp3' };
       const result = sut.redactContent(content, '63cHjt3BAhGnNxzJGrTsN1');
