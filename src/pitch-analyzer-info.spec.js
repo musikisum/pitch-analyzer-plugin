@@ -205,6 +205,18 @@ describe('pitch-analyzer-info', () => {
       const result = sut.redactContent(content, '63cHjt3BAhGnNxzJGrTsN1');
       expect(result.taskAudioSourceUrl).toBe('cdn://room-media/63cHjt3BAhGnNxzJGrTsN1/audio.mp3');
     });
+
+    it('preserves taskAudioSourceUrl when it is a media-library URL (accessible from any room)', () => {
+      const content = { ...makeDefaultContent(), taskAudioSourceUrl: 'cdn://media-library/JgTaqob5vqosBiHsZZoh1/audio.mp3' };
+      const result = sut.redactContent(content, 'any-room-id');
+      expect(result.taskAudioSourceUrl).toBe('cdn://media-library/JgTaqob5vqosBiHsZZoh1/audio.mp3');
+    });
+
+    it('redacts taskAudioSourceUrl when it belongs to a different room', () => {
+      const content = { ...makeDefaultContent(), taskAudioSourceUrl: 'cdn://room-media/OTHER-ROOM-ID/audio.mp3' };
+      const result = sut.redactContent(content, '63cHjt3BAhGnNxzJGrTsN1');
+      expect(result.taskAudioSourceUrl).toBe('');
+    });
   });
 
   // ---------------------------------------------------------------------------

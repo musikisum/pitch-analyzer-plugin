@@ -80,6 +80,10 @@ class PitchAnalyzerInfo {
       }
     }
 
+    if (!couldAccessUrlFromRoom(redactedContent.taskAudioSourceUrl, targetRoomId)) {
+      redactedContent.taskAudioSourceUrl = '';
+    }
+
     return redactedContent;
   }
 
