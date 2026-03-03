@@ -1,4 +1,4 @@
-import { TASK_MODE } from './constants.js';
+import { TASK_MODE, TASK_AUDIO_TYPE } from './constants.js';
 import PitchAnalyzerInfo from './pitch-analyzer-info.js';
 import { beforeEach, describe, expect, it } from 'vitest';
 import GithubFlavoredMarkdown from '@educandu/educandu/common/github-flavored-markdown.js';
@@ -14,7 +14,10 @@ function makeDefaultContent() {
       sourceUrl: '',
       copyrightNotice: ''
     },
-    chordMap: null
+    taskAudioType: TASK_AUDIO_TYPE.none,
+    taskAudioSourceUrl: '',
+    chordMap: null,
+    parsedScore: null
   };
 }
 
@@ -96,6 +99,16 @@ describe('pitch-analyzer-info', () => {
 
     it('throws for an invalid taskMode value', () => {
       expect(() => sut.validateContent({ ...makeDefaultContent(), taskMode: 'invalid-mode' })).toThrow();
+    });
+
+    it('accepts every TASK_AUDIO_TYPE value for taskAudioType', () => {
+      expect(() => sut.validateContent({ ...makeDefaultContent(), taskAudioType: TASK_AUDIO_TYPE.none })).not.toThrow();
+      expect(() => sut.validateContent({ ...makeDefaultContent(), taskAudioType: TASK_AUDIO_TYPE.abcPlayer })).not.toThrow();
+      expect(() => sut.validateContent({ ...makeDefaultContent(), taskAudioType: TASK_AUDIO_TYPE.urlAudio })).not.toThrow();
+    });
+
+    it('throws for an invalid taskAudioType value', () => {
+      expect(() => sut.validateContent({ ...makeDefaultContent(), taskAudioType: 'invalid-type' })).toThrow();
     });
   });
 
@@ -200,6 +213,11 @@ describe('pitch-analyzer-info', () => {
       expect(() => sut.redactContent(content, 'any-room-id')).not.toThrow();
     });
 
+    it('does not crash when taskAudioSourceUrl is absent from content', () => {
+      const { taskAudioSourceUrl: _u, ...noAudio } = makeDefaultContent();
+      expect(() => sut.redactContent(noAudio, 'any-room-id')).not.toThrow();
+    });
+
     it('preserves taskAudioSourceUrl when it is accessible from the target room', () => {
       const content = { ...makeDefaultContent(), taskAudioSourceUrl: 'cdn://room-media/63cHjt3BAhGnNxzJGrTsN1/audio.mp3' };
       const result = sut.redactContent(content, '63cHjt3BAhGnNxzJGrTsN1');
@@ -290,6 +308,11 @@ describe('pitch-analyzer-info', () => {
     it('does not crash when taskImage is null', () => {
       const content = { ...makeDefaultContent(), taskImage: null };
       expect(() => sut.getCdnResources(content)).not.toThrow();
+    });
+
+    it('does not crash when taskAudioSourceUrl is absent from content', () => {
+      const { taskAudioSourceUrl: _u, ...noAudio } = makeDefaultContent();
+      expect(() => sut.getCdnResources(noAudio)).not.toThrow();
     });
 
     it('includes taskAudioSourceUrl when it is an internal CDN resource', () => {

@@ -1,6 +1,6 @@
 import joi from 'joi';
 import React from 'react';
-import { TASK_MODE } from './constants.js';
+import { TASK_MODE, TASK_AUDIO_TYPE } from './constants.js';
 import { getDefaultContent } from './default-content.js';
 import PitchAnalyzerIcon from './pitch-analyzer-icon.js';
 import cloneDeep from '@educandu/educandu/utils/clone-deep.js';
@@ -51,7 +51,9 @@ class PitchAnalyzerInfo {
       taskImage: joi.object({
         sourceUrl: joi.string().allow('').required(),
         copyrightNotice: joi.string().allow('').required()
-      }).optional()
+      }).optional(),
+      taskAudioType: joi.string().valid(...Object.values(TASK_AUDIO_TYPE)).optional(),
+      taskAudioSourceUrl: joi.string().allow('').optional()
     }).unknown(true);
 
     joi.attempt(content, schema, { abortEarly: false, convert: false, noDefaults: true });
